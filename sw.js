@@ -1,5 +1,5 @@
 // ציוצייה – service worker: app shell offline + cached tweet images
-const SHELL_CACHE = 'tziutziya-shell-v2';
+const SHELL_CACHE = 'tziutziya-shell-v3';
 const IMG_CACHE = 'tziutziya-img-v1';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
