@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ציוצייה</title>
+<title>Tziutziya</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="ציוצייה">
+<meta name="apple-mobile-web-app-title" content="Tziutziya">
 <meta name="theme-color" content="#f6f4f0" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#141416" media="(prefers-color-scheme: dark)">
 <style>
@@ -31,6 +31,7 @@ header{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(10px + 
 header h1{font-size:23px;margin:0;flex:1;font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:-.2px}
 .iconbtn{width:40px;height:40px;flex:none;border-radius:50%;border:0;background:var(--chip);color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}
 .iconbtn svg{width:20px;height:20px}
+[dir=ltr] .iconbtn.back svg{transform:scaleX(-1)}
 main{padding:2px 12px 0}
 .banner{background:var(--warn);color:var(--warn-ink);border-radius:14px;padding:10px 12px;font-size:14px;margin:0 2px 14px;display:flex;gap:10px;align-items:center}
 .banner span{flex:1}
@@ -53,13 +54,14 @@ main{padding:2px 12px 0}
 .media{position:relative;background:var(--line)}
 .media img{width:100%;display:block}
 .play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center;font-size:15px;padding-left:3px}
-.count{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;border-radius:999px;padding:2px 7px;direction:ltr}
+.count{position:absolute;top:8px;inset-inline-end:8px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;border-radius:999px;padding:2px 7px;direction:ltr}
 .card .body{padding:10px 11px 11px}
 .author{display:flex;align-items:center;gap:7px;min-width:0}
 .author img{width:24px;height:24px;border-radius:50%;flex:none;background:var(--line)}
 .author .nm{min-width:0;display:flex;flex-direction:column;line-height:1.2}
 .author b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.author span{font-size:12px;color:var(--muted);direction:ltr;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.author span{font-size:12px;color:var(--muted);direction:ltr;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+[dir=rtl] .author span{text-align:right}
 .text{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;margin-top:7px}
 .card .text{display:-webkit-box;-webkit-line-clamp:9;-webkit-box-orient:vertical;overflow:hidden}
 .note{margin-top:8px;font-size:12.5px;background:var(--chip);border-radius:10px;padding:6px 8px;white-space:pre-wrap}
@@ -67,7 +69,7 @@ main{padding:2px 12px 0}
 .quote b{font-size:12px}
 .empty{text-align:center;color:var(--muted);padding:40px 20px}
 .empty h2{color:var(--ink);font-size:20px;margin:10px 0 6px}
-.empty ol{text-align:right;display:inline-block;margin:14px auto 0;padding-inline-start:20px;line-height:1.9}
+.empty ol{text-align:start;display:inline-block;margin:14px auto 0;padding-inline-start:20px;line-height:1.9}
 #fab{position:fixed;z-index:6;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);border:0;border-radius:999px;background:var(--ink);color:var(--bg);font:inherit;font-weight:650;padding:14px 24px;box-shadow:0 6px 22px rgba(0,0,0,.25);display:flex;gap:8px;align-items:center;cursor:pointer;white-space:nowrap}
 #fab svg{width:18px;height:18px}
 #sheetWrap{position:fixed;inset:0;z-index:20}
@@ -106,6 +108,7 @@ textarea{resize:vertical;margin-top:12px}
 .section p,.section li{color:var(--muted);font-size:14px;margin:4px 0}
 .section ol{padding-inline-start:20px;margin:6px 0}
 .section .btn{margin-top:10px}
+.section .chips{margin-top:8px}
 .stat{display:flex;justify-content:space-between;font-size:14px;padding:4px 0}
 .searchbox{margin:0 2px 14px}
 #toast{position:fixed;z-index:30;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;max-width:88vw;text-align:center}
@@ -115,18 +118,114 @@ textarea{resize:vertical;margin-top:12px}
 <body>
 <header id="top"></header>
 <main id="view"></main>
-<button id="fab" aria-label="שמירת ציוץ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>שמירת ציוץ</button>
+<button id="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span id="fabLabel"></span></button>
 <div id="sheetWrap" hidden><div class="backdrop"></div><div class="sheet" role="dialog" aria-modal="true"></div></div>
 <div id="toast" role="status"></div>
 <input type="file" id="importFile" accept=".json,application/json" hidden>
 
 <script>
 'use strict';
+/* ---------- i18n ---------- */
+const I18N = {
+  he: {
+    dir: 'rtl', locale: 'he-IL',
+    app: 'ציוצייה', saveTweet: 'שמירת ציוץ', search: 'חיפוש', settings: 'הגדרות', back: 'חזרה', options: 'אפשרויות',
+    noTweetLink: 'לא מצאתי קישור לציוץ', notTweetLink: 'זה לא נראה כמו קישור לציוץ',
+    alreadySaved: n => `הציוץ הזה כבר שמור בתיקייה «${n}». אפשר להעביר אותו.`,
+    whichFolder: 'לאיזו תיקייה?', notePh: 'הערה (לא חובה)', save: 'שמירה', saving: 'שומר…',
+    fetchFailed: 'לא הצלחתי למשוך את תוכן הציוץ כרגע. הוא יישמר כקישור, ואפשר לנסות שוב אחר כך.',
+    savedIn: n => `נשמר בתיקייה «${n}»`, saveFailed: 'השמירה נכשלה: ',
+    pasteHint: 'ב-X: שיתוף ← העתקת קישור, ואז הדביקי כאן.', continue: 'המשך',
+    newFolderChip: '＋ תיקייה חדשה', newFolder: 'תיקייה חדשה', folderNamePh: 'שם התיקייה', add: 'הוספה',
+    inFolder: 'בתיקייה', savedOn: 'נשמר', openInX: 'פתיחה ב-X', moveToFolder: 'העברה לתיקייה',
+    addNote: 'הוספת הערה', editNote: 'עריכת הערה', note: 'הערה',
+    refetch: 'ניסיון חוזר למשוך תוכן', fetching: 'מושך…', stillFailed: 'עדיין לא הצליח', contentUpdated: 'התוכן עודכן',
+    deleteTweet: 'מחיקת הציוץ', confirmDeleteTweet: 'למחוק את הציוץ מהשמורים?', deleted: 'נמחק',
+    movedTo: n => `הועבר ל«${n}»`,
+    newFolderPrompt: 'שם התיקייה החדשה', rename: 'שינוי שם', renamePrompt: 'שם חדש',
+    deleteFolder: n => n ? `מחיקת התיקייה ו-${n} הציוצים שבה` : 'מחיקת התיקייה',
+    confirmDeleteFolder: (name, n) => n ? `למחוק את «${name}» ואת ${n} הציוצים שבה? אי אפשר לבטל.` : `למחוק את «${name}»?`,
+    folderDeleted: 'התיקייה נמחקה', defaultFolder: 'כללי',
+    restoreTitle: 'שחזור מגיבוי',
+    backupContents: (f, t, d) => `בקובץ: ${f} תיקיות, ${t} ציוצים${d ? ` (מ-${d})` : ''}.`,
+    merge: 'מיזוג עם מה שכבר שמור', replace: 'החלפת הכול בגיבוי',
+    confirmReplace: 'כל מה ששמור עכשיו יימחק ויוחלף בגיבוי. להמשיך?', restoreDone: 'השחזור הושלם',
+    invalidFile: 'הקובץ לא תקין', notBackup: 'זה לא קובץ גיבוי של ציוצייה',
+    installHint: 'כדי שהשמירות יישמרו לאורך זמן, כדאי להוסיף למסך הבית: כפתור השיתוף ב-Safari ← "הוספה למסך הבית".',
+    backupOld: 'עבר יותר מחודש מהגיבוי האחרון.', backupNever: 'עוד לא גיבית את השמורים.', backupBtn: 'גיבוי',
+    allTweets: 'כל הציוצים', tweetsCount: n => n === 1 ? 'ציוץ אחד' : `${n} ציוצים`,
+    emptyTitle: 'עוד אין כאן כלום', emptyIntro: 'ככה שומרים ציוץ ראשון:',
+    emptySteps: ['באפליקציה של X לוחצים <b>שיתוף</b> על ציוץ', 'בוחרים <b>העתקת קישור</b>', 'חוזרים לכאן ולוחצים <b>שמירת ציוץ</b>', 'בוחרים תיקייה, וזהו'],
+    folderEmptyTitle: 'התיקייה ריקה', folderEmptyBody: 'שמרי לכאן ציוץ עם הכפתור למטה.',
+    searchTitle: 'חיפוש', searchPh: 'טקסט, הערה, שם או תיקייה', noResults: 'לא נמצא כלום',
+    settingsTitle: 'הגדרות וגיבוי', language: 'שפה',
+    backupTitle: 'גיבוי ושחזור', backupText: 'הכול נשמר רק בטלפון הזה. כדאי לייצא גיבוי מדי פעם ולשמור אותו ב"קבצים" או ב-iCloud.',
+    lastBackup: 'גיבוי אחרון', never: 'עוד לא', exportBtn: 'ייצוא גיבוי (JSON)', importBtn: 'שחזור מקובץ גיבוי',
+    howTitle: 'איך שומרים ציוץ',
+    howSteps: ['באפליקציה של X: <b>שיתוף</b> ← <b>העתקת קישור</b>', 'פותחים את ציוצייה ולוחצים <b>שמירת ציוץ</b> (אם iOS שואל, מאשרים "הדבקה")', 'בוחרים תיקייה ושומרים'],
+    fxNote: 'את התוכן של הציוץ (טקסט, תמונות) האפליקציה מושכת דרך השירות הציבורי FxTwitter.',
+    statusTitle: 'מצב', tweets: 'ציוצים', folders: 'תיקיות', installed: 'מותקן במסך הבית', persisted: 'אחסון מוגן ממחיקה אוטומטית',
+    yes: 'כן', no: 'לא', linkOnly: 'נשמר כקישור בלבד', tweetFallback: 'ציוץ', storageError: 'אין גישה לאחסון'
+  },
+  en: {
+    dir: 'ltr', locale: 'en-US',
+    app: 'Tziutziya', saveTweet: 'Save tweet', search: 'Search', settings: 'Settings', back: 'Back', options: 'Options',
+    noTweetLink: "Couldn't find a tweet link", notTweetLink: "That doesn't look like a tweet link",
+    alreadySaved: n => `This tweet is already saved in "${n}". You can move it.`,
+    whichFolder: 'Which folder?', notePh: 'Note (optional)', save: 'Save', saving: 'Saving…',
+    fetchFailed: "Couldn't fetch the tweet's content right now. It will be saved as a link, and you can retry later.",
+    savedIn: n => `Saved to "${n}"`, saveFailed: 'Saving failed: ',
+    pasteHint: 'In X: Share → Copy Link, then paste it here.', continue: 'Continue',
+    newFolderChip: '＋ New folder', newFolder: 'New folder', folderNamePh: 'Folder name', add: 'Add',
+    inFolder: 'In', savedOn: 'saved', openInX: 'Open in X', moveToFolder: 'Move to folder',
+    addNote: 'Add note', editNote: 'Edit note', note: 'Note',
+    refetch: 'Retry fetching content', fetching: 'Fetching…', stillFailed: 'Still not working', contentUpdated: 'Content updated',
+    deleteTweet: 'Delete tweet', confirmDeleteTweet: 'Remove this tweet from your saves?', deleted: 'Deleted',
+    movedTo: n => `Moved to "${n}"`,
+    newFolderPrompt: 'New folder name', rename: 'Rename', renamePrompt: 'New name',
+    deleteFolder: n => n ? `Delete folder and its ${n === 1 ? 'tweet' : n + ' tweets'}` : 'Delete folder',
+    confirmDeleteFolder: (name, n) => n ? `Delete "${name}" and its ${n === 1 ? 'tweet' : n + ' tweets'}? This can't be undone.` : `Delete "${name}"?`,
+    folderDeleted: 'Folder deleted', defaultFolder: 'General',
+    restoreTitle: 'Restore from backup',
+    backupContents: (f, t, d) => `This file has ${f} folders and ${t} tweets${d ? ` (from ${d})` : ''}.`,
+    merge: 'Merge with what you have', replace: 'Replace everything with backup',
+    confirmReplace: 'Everything currently saved will be deleted and replaced by the backup. Continue?', restoreDone: 'Restore complete',
+    invalidFile: 'Invalid file', notBackup: "This isn't a Tziutziya backup file",
+    installHint: 'To keep your saves long-term, add this app to your home screen: Share button in Safari → "Add to Home Screen".',
+    backupOld: "It's been over a month since your last backup.", backupNever: "You haven't backed up your saves yet.", backupBtn: 'Back up',
+    allTweets: 'All tweets', tweetsCount: n => n === 1 ? '1 tweet' : `${n} tweets`,
+    emptyTitle: 'Nothing here yet', emptyIntro: 'How to save your first tweet:',
+    emptySteps: ['In the X app, tap <b>Share</b> on a tweet', 'Choose <b>Copy Link</b>', 'Come back here and tap <b>Save tweet</b>', 'Pick a folder, and you\'re done'],
+    folderEmptyTitle: 'This folder is empty', folderEmptyBody: 'Save a tweet here with the button below.',
+    searchTitle: 'Search', searchPh: 'Text, note, name or folder', noResults: 'No results',
+    settingsTitle: 'Settings & backup', language: 'Language',
+    backupTitle: 'Backup & restore', backupText: 'Everything is stored only on this device. Export a backup now and then and keep it in Files or iCloud.',
+    lastBackup: 'Last backup', never: 'Never', exportBtn: 'Export backup (JSON)', importBtn: 'Restore from backup file',
+    howTitle: 'How to save a tweet',
+    howSteps: ['In the X app: <b>Share</b> → <b>Copy Link</b>', 'Open Tziutziya and tap <b>Save tweet</b> (allow "Paste" if iOS asks)', 'Pick a folder and save'],
+    fxNote: "Tweet content (text, images) is fetched through the public FxTwitter service.",
+    statusTitle: 'Status', tweets: 'Tweets', folders: 'Folders', installed: 'Installed on home screen', persisted: 'Storage protected from auto-cleanup',
+    yes: 'Yes', no: 'No', linkOnly: 'Saved as a link only', tweetFallback: 'Tweet', storageError: 'Storage unavailable'
+  }
+};
+const LANGS = [{ code: 'he', label: 'עברית' }, { code: 'en', label: 'English' }];
+let lang;
+const t = (k, ...a) => { const v = I18N[lang][k] ?? I18N.en[k]; return typeof v === 'function' ? v(...a) : v; };
+function applyLang(code){
+  lang = I18N[code] ? code : 'en';
+  const L = I18N[lang];
+  document.documentElement.lang = lang;
+  document.documentElement.dir = L.dir;
+  document.title = L.app;
+  $('#fabLabel').textContent = L.saveTweet;
+  $('#fab').setAttribute('aria-label', L.saveTweet);
+}
+
 /* ---------- helpers ---------- */
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-const fmtDate = ms => ms ? new Intl.DateTimeFormat('he-IL', {day:'numeric', month:'short', year:'numeric'}).format(new Date(ms)) : '';
+const fmtDate = ms => ms ? new Intl.DateTimeFormat(I18N[lang].locale, {day:'numeric', month:'short', year:'numeric'}).format(new Date(ms)) : '';
 const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const isStandalone = () => navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
 const ls = {
@@ -145,8 +244,8 @@ function linkify(s){
 }
 let toastTimer;
 function toast(msg){
-  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+  const el = $('#toast'); el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 2400);
 }
 
 /* ---------- storage (IndexedDB) ---------- */
@@ -166,9 +265,9 @@ function openDB(){
 }
 function run(store, mode, fn){
   return new Promise((res, rej) => {
-    const t = db.transaction(store, mode); const s = t.objectStore(store);
+    const tx = db.transaction(store, mode); const s = tx.objectStore(store);
     let out; const r = fn(s); if (r) r.onsuccess = () => { out = r.result; };
-    t.oncomplete = () => res(out); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error);
+    tx.oncomplete = () => res(out); tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error);
   });
 }
 const getAll = store => run(store, 'readonly', s => s.getAll());
@@ -178,8 +277,8 @@ const putMany = (store, items) => run(store, 'readwrite', s => { items.forEach(i
 const clearStore = store => run(store, 'readwrite', s => s.clear());
 
 async function saveFolder(f){ await putOne('folders', f); const i = state.folders.findIndex(x => x.id === f.id); i < 0 ? state.folders.push(f) : state.folders[i] = f; }
-async function saveTweet(t){ await putOne('tweets', t); const i = state.tweets.findIndex(x => x.id === t.id); i < 0 ? state.tweets.push(t) : state.tweets[i] = t; }
-async function removeTweet(id){ await delOne('tweets', id); state.tweets = state.tweets.filter(t => t.id !== id); }
+async function saveTweet(tw){ await putOne('tweets', tw); const i = state.tweets.findIndex(x => x.id === tw.id); i < 0 ? state.tweets.push(tw) : state.tweets[i] = tw; }
+async function removeTweet(id){ await delOne('tweets', id); state.tweets = state.tweets.filter(x => x.id !== id); }
 async function createFolder(name){
   name = (name || '').trim(); if (!name) return null;
   const dup = state.folders.find(f => f.name === name); if (dup) return dup;
@@ -192,14 +291,14 @@ async function askPersist(){
 }
 
 /* ---------- data helpers ---------- */
-const tweetsIn = fid => state.tweets.filter(t => t.folderId === fid).sort((a, b) => b.savedAt - a.savedAt);
+const tweetsIn = fid => state.tweets.filter(x => x.folderId === fid).sort((a, b) => b.savedAt - a.savedAt);
 const folderName = fid => state.folders.find(f => f.id === fid)?.name || '';
 function sortedFolders(){
-  const last = fid => Math.max(0, ...state.tweets.filter(t => t.folderId === fid).map(t => t.savedAt));
+  const last = fid => Math.max(0, ...state.tweets.filter(x => x.folderId === fid).map(x => x.savedAt));
   return [...state.folders].sort((a, b) => (last(b.id) || b.createdAt) - (last(a.id) || a.createdAt));
 }
 function sized(u, n){ return u && u.includes('pbs.twimg.com/media') ? u.split('?')[0] + '?name=' + n : u; }
-function thumbOf(t){ const m = t.media?.[0]; if (!m) return null; return m.type === 'photo' ? sized(m.url, 'small') : (m.thumb || null); }
+function thumbOf(tw){ const m = tw.media?.[0]; if (!m) return null; return m.type === 'photo' ? sized(m.url, 'small') : (m.thumb || null); }
 
 /* ---------- tweet fetching ---------- */
 function parseTweetUrl(text){
@@ -228,56 +327,56 @@ function normMedia(m){
     ? { type:'photo', url:x.url, w:x.width, h:x.height }
     : { type:x.type || 'video', url:x.url, thumb:x.thumbnail_url, w:x.width, h:x.height });
 }
-function normalize(t, p){
-  const handle = t.author?.screen_name || p.user || '';
+function normalize(tw, p){
+  const handle = tw.author?.screen_name || p.user || '';
   return {
     url: handle ? `https://x.com/${handle}/status/${p.id}` : p.url,
-    text: typeof t.text === 'string' ? t.text : (t.raw_text?.text || ''),
-    author: { name: t.author?.name || handle, handle, avatar: t.author?.avatar_url || '' },
-    createdAt: t.created_timestamp ? t.created_timestamp * 1000 : (t.created_at ? Date.parse(t.created_at) : null),
-    media: normMedia(t.media),
-    quote: t.quote ? { name: t.quote.author?.name || '', handle: t.quote.author?.screen_name || '', text: t.quote.text || '' } : null,
+    text: typeof tw.text === 'string' ? tw.text : (tw.raw_text?.text || ''),
+    author: { name: tw.author?.name || handle, handle, avatar: tw.author?.avatar_url || '' },
+    createdAt: tw.created_timestamp ? tw.created_timestamp * 1000 : (tw.created_at ? Date.parse(tw.created_at) : null),
+    media: normMedia(tw.media),
+    quote: tw.quote ? { name: tw.quote.author?.name || '', handle: tw.quote.author?.screen_name || '', text: tw.quote.text || '' } : null,
     fetched: true
   };
 }
 
 /* ---------- rendering pieces ---------- */
-function authorHTML(t){
-  const a = t.author || {};
+function authorHTML(tw){
+  const a = tw.author || {};
   return `<div class="author">${a.avatar ? `<img src="${esc(a.avatar)}" loading="lazy" referrerpolicy="no-referrer" alt="">` : ''}
-    <div class="nm"><b>${esc(a.name || (a.handle ? '@' + a.handle : 'ציוץ'))}</b>${a.handle ? `<span>@${esc(a.handle)}</span>` : ''}</div></div>`;
+    <div class="nm"><b dir="auto">${esc(a.name || (a.handle ? '@' + a.handle : t('tweetFallback')))}</b>${a.handle ? `<span>@${esc(a.handle)}</span>` : ''}</div></div>`;
 }
-function quoteHTML(t){
-  if (!t.quote) return '';
-  return `<div class="quote" dir="auto"><b>${esc(t.quote.name)}</b> <span style="color:var(--muted);font-size:12px" dir="ltr">@${esc(t.quote.handle)}</span><div class="text" style="margin-top:3px;font-size:13px">${linkify(t.quote.text)}</div></div>`;
+function quoteHTML(tw){
+  if (!tw.quote) return '';
+  return `<div class="quote" dir="auto"><b>${esc(tw.quote.name)}</b> <span style="color:var(--muted);font-size:12px" dir="ltr">@${esc(tw.quote.handle)}</span><div class="text" style="margin-top:3px;font-size:13px">${linkify(tw.quote.text)}</div></div>`;
 }
-function cardMedia(t){
-  if (!t.media?.length) return '';
-  const m = t.media[0]; const src = thumbOf(t); if (!src) return '';
+function cardMedia(tw){
+  if (!tw.media?.length) return '';
+  const m = tw.media[0]; const src = thumbOf(tw); if (!src) return '';
   const ratio = m.w && m.h ? ` style="aspect-ratio:${m.w}/${m.h}"` : '';
-  return `<div class="media"><img src="${esc(src)}" loading="lazy" referrerpolicy="no-referrer" alt=""${ratio}>${m.type !== 'photo' ? '<span class="play">▶</span>' : ''}${t.media.length > 1 ? `<span class="count">1/${t.media.length}</span>` : ''}</div>`;
+  return `<div class="media"><img src="${esc(src)}" loading="lazy" referrerpolicy="no-referrer" alt=""${ratio}>${m.type !== 'photo' ? '<span class="play">▶</span>' : ''}${tw.media.length > 1 ? `<span class="count">1/${tw.media.length}</span>` : ''}</div>`;
 }
-function cardHTML(t){
-  const fallback = !t.fetched && !t.text ? `<div class="text" style="color:var(--muted)">נשמר כקישור בלבד</div>` : '';
-  return `<article class="card" data-id="${esc(t.id)}">${cardMedia(t)}<div class="body">${authorHTML(t)}
-    ${t.text ? `<div class="text" dir="auto">${linkify(t.text)}</div>` : fallback}
-    ${t.note ? `<div class="note" dir="auto">${esc(t.note)}</div>` : ''}</div></article>`;
+function cardHTML(tw){
+  const fallback = !tw.fetched && !tw.text ? `<div class="text" style="color:var(--muted)">${t('linkOnly')}</div>` : '';
+  return `<article class="card" data-id="${esc(tw.id)}">${cardMedia(tw)}<div class="body">${authorHTML(tw)}
+    ${tw.text ? `<div class="text" dir="auto">${linkify(tw.text)}</div>` : fallback}
+    ${tw.note ? `<div class="note" dir="auto">${esc(tw.note)}</div>` : ''}</div></article>`;
 }
-function galleryHTML(t){
-  if (!t.media?.length) return '';
-  const cols = t.media.length > 1 ? 'grid-template-columns:1fr 1fr' : '';
-  return `<div class="gallery" style="${cols}">${t.media.map(m => m.type === 'photo'
+function galleryHTML(tw){
+  if (!tw.media?.length) return '';
+  const cols = tw.media.length > 1 ? 'grid-template-columns:1fr 1fr' : '';
+  return `<div class="gallery" style="${cols}">${tw.media.map(m => m.type === 'photo'
     ? `<a href="${esc(sized(m.url, 'orig'))}" target="_blank" rel="noopener"><img src="${esc(sized(m.url, 'medium'))}" loading="lazy" referrerpolicy="no-referrer" alt=""></a>`
     : `<video src="${esc(m.url)}" poster="${esc(m.thumb || '')}" controls playsinline preload="none" ${m.type === 'gif' ? 'loop muted' : ''}></video>`).join('')}</div>`;
 }
-function fullTweetHTML(t){
-  return `<div class="pv">${authorHTML(t)}
-    ${t.text ? `<div class="text" dir="auto" style="font-size:15.5px">${linkify(t.text)}</div>` : ''}
-    ${galleryHTML(t)}${quoteHTML(t)}
-    ${t.createdAt ? `<div class="meta" style="margin:8px 0 0">${fmtDate(t.createdAt)}</div>` : ''}</div>`;
+function fullTweetHTML(tw){
+  return `<div class="pv">${authorHTML(tw)}
+    ${tw.text ? `<div class="text" dir="auto" style="font-size:15.5px">${linkify(tw.text)}</div>` : ''}
+    ${galleryHTML(tw)}${quoteHTML(tw)}
+    ${tw.createdAt ? `<div class="meta" style="margin:8px 0 0">${fmtDate(tw.createdAt)}</div>` : ''}</div>`;
 }
-function previewHTML(t){
-  return `<div class="pv">${authorHTML(t)}${t.text ? `<div class="text" dir="auto" style="-webkit-line-clamp:5;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden">${linkify(t.text)}</div>` : ''}${cardMedia(t)}</div>`;
+function previewHTML(tw){
+  return `<div class="pv">${authorHTML(tw)}${tw.text ? `<div class="text" dir="auto" style="-webkit-line-clamp:5;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden">${linkify(tw.text)}</div>` : ''}${cardMedia(tw)}</div>`;
 }
 const skeletonHTML = `<div class="pv"><div class="skel" style="width:40%"></div><div class="skel"></div><div class="skel" style="width:75%"></div></div>`;
 function emptyState(title, body){ return `<div class="empty"><div style="font-size:40px">🗂️</div><h2>${title}</h2>${body}</div>`; }
@@ -294,9 +393,9 @@ $('#sheetWrap .backdrop').addEventListener('click', closeSheet);
 
 function folderChips(container, selected, onPick, {allowNew = true} = {}){
   const render = () => {
-    container.innerHTML = sortedFolders().map(f => `<button class="chip ${f.id === selected ? 'on' : ''}" data-f="${esc(f.id)}">${esc(f.name)}</button>`).join('')
-      + (allowNew ? `<button class="chip add" data-new="1">＋ תיקייה חדשה</button>` : '')
-      + (allowNew ? `<div class="inline" hidden style="width:100%"><input placeholder="שם התיקייה" maxlength="40"><button class="btn">הוספה</button></div>` : '');
+    container.innerHTML = sortedFolders().map(f => `<button class="chip ${f.id === selected ? 'on' : ''}" data-f="${esc(f.id)}" dir="auto">${esc(f.name)}</button>`).join('')
+      + (allowNew ? `<button class="chip add" data-new="1">${t('newFolderChip')}</button>` : '')
+      + (allowNew ? `<div class="inline" hidden style="width:100%"><input placeholder="${esc(t('folderNamePh'))}" maxlength="40" dir="auto"><button class="btn">${t('add')}</button></div>` : '');
     container.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { selected = b.dataset.f; onPick(selected); render(); });
     const nb = container.querySelector('[data-new]');
     if (nb){
@@ -313,29 +412,29 @@ function folderChips(container, selected, onPick, {allowNew = true} = {}){
 /* ---------- save flow ---------- */
 async function startSave(raw){
   const p = parseTweetUrl(raw);
-  if (!p){ toast('לא מצאתי קישור לציוץ'); return pasteSheet(raw); }
-  const existing = state.tweets.find(t => t.id === p.id);
+  if (!p){ toast(t('noTweetLink')); return pasteSheet(raw); }
+  const existing = state.tweets.find(x => x.id === p.id);
   let selected = existing?.folderId || ls.get('lastFolder');
   if (!state.folders.some(f => f.id === selected)) selected = sortedFolders()[0]?.id || null;
 
   openSheet(`<div id="pv">${existing ? previewHTML(existing) : skeletonHTML}</div>
-    ${existing ? `<div class="warn">הציוץ הזה כבר שמור בתיקייה «${esc(folderName(existing.folderId))}». אפשר להעביר אותו.</div>` : ''}
-    <h4>לאיזו תיקייה?</h4><div class="chips" id="fchips"></div>
-    <textarea id="note" rows="2" placeholder="הערה (לא חובה)" dir="auto">${esc(existing?.note || '')}</textarea>
-    <div class="row"><button class="btn" id="doSave">שמירה</button></div>`, s => {
+    ${existing ? `<div class="warn">${esc(t('alreadySaved', folderName(existing.folderId)))}</div>` : ''}
+    <h4>${t('whichFolder')}</h4><div class="chips" id="fchips"></div>
+    <textarea id="note" rows="2" placeholder="${esc(t('notePh'))}" dir="auto">${esc(existing?.note || '')}</textarea>
+    <div class="row"><button class="btn" id="doSave">${t('save')}</button></div>`, s => {
     folderChips(s.querySelector('#fchips'), selected, f => selected = f);
 
     const dataP = existing ? Promise.resolve(existing) : fetchTweet(p);
     if (!existing) dataP.then(d => {
       const pv = s.querySelector('#pv'); if (!pv) return;
       pv.innerHTML = d ? previewHTML(d)
-        : `<div class="pv"><b dir="ltr">${esc(p.url)}</b><div class="meta">לא הצלחתי למשוך את תוכן הציוץ כרגע. הוא יישמר כקישור, ואפשר לנסות שוב אחר כך.</div></div>`;
+        : `<div class="pv"><b dir="ltr">${esc(p.url)}</b><div class="meta">${t('fetchFailed')}</div></div>`;
     });
 
     s.querySelector('#doSave').onclick = async e => {
-      const btn = e.currentTarget; btn.disabled = true; btn.textContent = 'שומר…';
+      const btn = e.currentTarget; btn.disabled = true; btn.textContent = t('saving');
       try {
-        if (!selected){ const f = await createFolder('כללי'); selected = f.id; }
+        if (!selected){ const f = await createFolder(t('defaultFolder')); selected = f.id; }
         const data = await dataP;
         const rec = Object.assign(
           { id: p.id, url: p.url, author: { name: '', handle: p.user || '', avatar: '' }, text: '', media: [], quote: null, fetched: false, createdAt: null },
@@ -345,21 +444,21 @@ async function startSave(raw){
         ls.set('lastFolder', selected);
         askPersist();
         closeSheet();
-        toast(`נשמר בתיקייה «${folderName(selected)}»`);
+        toast(t('savedIn', folderName(selected)));
         route();
       } catch (err){
-        btn.disabled = false; btn.textContent = 'שמירה'; toast('השמירה נכשלה: ' + (err?.message || err));
+        btn.disabled = false; btn.textContent = t('save'); toast(t('saveFailed') + (err?.message || err));
       }
     };
   });
 }
 function pasteSheet(prefill = ''){
-  openSheet(`<h4 style="margin-top:4px">שמירת ציוץ</h4>
-    <p class="meta" style="margin:0 2px 10px">ב-X: שיתוף ← העתקת קישור, ואז הדביקי כאן.</p>
+  openSheet(`<h4 style="margin-top:4px">${t('saveTweet')}</h4>
+    <p class="meta" style="margin:0 2px 10px">${t('pasteHint')}</p>
     <input id="pasteIn" placeholder="https://x.com/…/status/…" dir="ltr" value="${esc(prefill)}" autocomplete="off">
-    <div class="row"><button class="btn" id="goPaste">המשך</button></div>`, s => {
+    <div class="row"><button class="btn" id="goPaste">${t('continue')}</button></div>`, s => {
     const inp = s.querySelector('#pasteIn');
-    const go = () => { if (parseTweetUrl(inp.value)) startSave(inp.value); else toast('זה לא נראה כמו קישור לציוץ'); };
+    const go = () => { if (parseTweetUrl(inp.value)) startSave(inp.value); else toast(t('notTweetLink')); };
     s.querySelector('#goPaste').onclick = go;
     inp.onkeydown = e => { if (e.key === 'Enter') go(); };
     setTimeout(() => inp.focus(), 250);
@@ -373,67 +472,67 @@ $('#fab').addEventListener('click', async () => {
 
 /* ---------- tweet detail ---------- */
 function openTweet(id){
-  const t = state.tweets.find(x => x.id === id); if (!t) return;
-  openSheet(`${fullTweetHTML(t)}
-    ${t.note ? `<div class="note" dir="auto" style="margin-top:10px;font-size:14px">${esc(t.note)}</div>` : ''}
-    <div class="meta">בתיקייה <b>${esc(folderName(t.folderId) || '—')}</b> · נשמר ${fmtDate(t.savedAt)}</div>
-    <div class="row"><a class="btn" href="${esc(t.url)}" target="_blank" rel="noopener">פתיחה ב-X</a></div>
-    <div class="row2"><button class="btn ghost" data-a="move">העברה לתיקייה</button><button class="btn ghost" data-a="note">${t.note ? 'עריכת הערה' : 'הוספת הערה'}</button></div>
-    ${!t.fetched ? `<div class="row"><button class="btn ghost" data-a="refetch">ניסיון חוזר למשוך תוכן</button></div>` : ''}
-    <div class="row"><button class="btn danger" data-a="del">מחיקת הציוץ</button></div>`, s => {
-    s.querySelector('[data-a=move]').onclick = () => moveSheet(t);
-    s.querySelector('[data-a=note]').onclick = () => noteSheet(t);
+  const tw = state.tweets.find(x => x.id === id); if (!tw) return;
+  openSheet(`${fullTweetHTML(tw)}
+    ${tw.note ? `<div class="note" dir="auto" style="margin-top:10px;font-size:14px">${esc(tw.note)}</div>` : ''}
+    <div class="meta">${t('inFolder')} <b dir="auto">${esc(folderName(tw.folderId) || '—')}</b> · ${t('savedOn')} ${fmtDate(tw.savedAt)}</div>
+    <div class="row"><a class="btn" href="${esc(tw.url)}" target="_blank" rel="noopener">${t('openInX')}</a></div>
+    <div class="row2"><button class="btn ghost" data-a="move">${t('moveToFolder')}</button><button class="btn ghost" data-a="note">${tw.note ? t('editNote') : t('addNote')}</button></div>
+    ${!tw.fetched ? `<div class="row"><button class="btn ghost" data-a="refetch">${t('refetch')}</button></div>` : ''}
+    <div class="row"><button class="btn danger" data-a="del">${t('deleteTweet')}</button></div>`, s => {
+    s.querySelector('[data-a=move]').onclick = () => moveSheet(tw);
+    s.querySelector('[data-a=note]').onclick = () => noteSheet(tw);
     s.querySelector('[data-a=del]').onclick = async () => {
-      if (!confirm('למחוק את הציוץ מהשמורים?')) return;
-      await removeTweet(t.id); closeSheet(); toast('נמחק'); route();
+      if (!confirm(t('confirmDeleteTweet'))) return;
+      await removeTweet(tw.id); closeSheet(); toast(t('deleted')); route();
     };
     const rf = s.querySelector('[data-a=refetch]');
     if (rf) rf.onclick = async () => {
-      rf.disabled = true; rf.textContent = 'מושך…';
-      const d = await fetchTweet(parseTweetUrl(t.url) || { id: t.id, user: t.author?.handle, url: t.url });
-      if (!d){ rf.disabled = false; rf.textContent = 'ניסיון חוזר למשוך תוכן'; return toast('עדיין לא הצליח'); }
-      await saveTweet(Object.assign({}, t, d)); route(); openTweet(t.id); toast('התוכן עודכן');
+      rf.disabled = true; rf.textContent = t('fetching');
+      const d = await fetchTweet(parseTweetUrl(tw.url) || { id: tw.id, user: tw.author?.handle, url: tw.url });
+      if (!d){ rf.disabled = false; rf.textContent = t('refetch'); return toast(t('stillFailed')); }
+      await saveTweet(Object.assign({}, tw, d)); route(); openTweet(tw.id); toast(t('contentUpdated'));
     };
   });
 }
-function moveSheet(t){
-  openSheet(`<h4 style="margin-top:4px">העברה לתיקייה</h4><div class="chips" id="mchips"></div>`, s => {
-    folderChips(s.querySelector('#mchips'), t.folderId, async fid => {
-      await saveTweet(Object.assign({}, t, { folderId: fid })); ls.set('lastFolder', fid);
-      closeSheet(); toast(`הועבר ל«${folderName(fid)}»`); route();
+function moveSheet(tw){
+  openSheet(`<h4 style="margin-top:4px">${t('moveToFolder')}</h4><div class="chips" id="mchips"></div>`, s => {
+    folderChips(s.querySelector('#mchips'), tw.folderId, async fid => {
+      await saveTweet(Object.assign({}, tw, { folderId: fid })); ls.set('lastFolder', fid);
+      closeSheet(); toast(t('movedTo', folderName(fid))); route();
     });
   });
 }
-function noteSheet(t){
-  openSheet(`<h4 style="margin-top:4px">הערה</h4><textarea id="nt" rows="4" dir="auto" style="margin-top:0">${esc(t.note || '')}</textarea>
-    <div class="row"><button class="btn" id="svn">שמירה</button></div>`, s => {
+function noteSheet(tw){
+  openSheet(`<h4 style="margin-top:4px">${t('note')}</h4><textarea id="nt" rows="4" dir="auto" style="margin-top:0">${esc(tw.note || '')}</textarea>
+    <div class="row"><button class="btn" id="svn">${t('save')}</button></div>`, s => {
     const ta = s.querySelector('#nt'); setTimeout(() => ta.focus(), 250);
     s.querySelector('#svn').onclick = async () => {
-      await saveTweet(Object.assign({}, t, { note: ta.value.trim() })); route(); openTweet(t.id);
+      await saveTweet(Object.assign({}, tw, { note: ta.value.trim() })); route(); openTweet(tw.id);
     };
   });
 }
 
 /* ---------- folders ---------- */
 async function newFolderFlow(){
-  const name = prompt('שם התיקייה החדשה'); if (!name?.trim()) return;
+  const name = prompt(t('newFolderPrompt')); if (!name?.trim()) return;
   await createFolder(name); route();
 }
 function folderMenu(fid){
   const f = state.folders.find(x => x.id === fid); if (!f) return;
   const n = tweetsIn(fid).length;
-  openSheet(`<h4 style="margin-top:4px">${esc(f.name)}</h4>
-    <button class="btn ghost" id="ren">שינוי שם</button>
-    <div class="row"><button class="btn danger" id="delf">מחיקת התיקייה${n ? ` ו-${n} הציוצים שבה` : ''}</button></div>`, s => {
+  openSheet(`<h4 style="margin-top:4px" dir="auto">${esc(f.name)}</h4>
+    <button class="btn ghost" id="ren">${t('rename')}</button>
+    <div class="row"><button class="btn danger" id="delf">${t('deleteFolder', n)}</button></div>`, s => {
     s.querySelector('#ren').onclick = async () => {
-      const name = prompt('שם חדש', f.name); if (!name?.trim()) return;
+      const name = prompt(t('renamePrompt'), f.name); if (!name?.trim()) return;
       await saveFolder(Object.assign({}, f, { name: name.trim() })); closeSheet(); route();
     };
     s.querySelector('#delf').onclick = async () => {
-      if (!confirm(n ? `למחוק את «${f.name}» ואת ${n} הציוצים שבה? אי אפשר לבטל.` : `למחוק את «${f.name}»?`)) return;
-      for (const t of tweetsIn(fid)) await removeTweet(t.id);
+      if (!confirm(t('confirmDeleteFolder', f.name, n))) return;
+      for (const tw of tweetsIn(fid)) await removeTweet(tw.id);
       await delOne('folders', fid); state.folders = state.folders.filter(x => x.id !== fid);
-      closeSheet(); toast('התיקייה נמחקה'); location.hash = '/';
+      closeSheet(); toast(t('folderDeleted')); location.hash = '/';
     };
   });
 }
@@ -454,19 +553,19 @@ async function exportData(){
 }
 $('#importFile').addEventListener('change', async e => {
   const file = e.target.files[0]; e.target.value = ''; if (!file) return;
-  let d; try { d = JSON.parse(await file.text()); } catch { return toast('הקובץ לא תקין'); }
-  if (!d || !Array.isArray(d.folders) || !Array.isArray(d.tweets)) return toast('זה לא קובץ גיבוי של ציוצייה');
+  let d; try { d = JSON.parse(await file.text()); } catch { return toast(t('invalidFile')); }
+  if (!d || !Array.isArray(d.folders) || !Array.isArray(d.tweets)) return toast(t('notBackup'));
   const folders = d.folders.filter(f => f && f.id && f.name);
-  const tweets = d.tweets.filter(t => t && t.id && t.url);
-  openSheet(`<h4 style="margin-top:4px">שחזור מגיבוי</h4>
-    <p class="meta" style="margin:0 2px 12px">בקובץ: ${folders.length} תיקיות, ${tweets.length} ציוצים${d.exportedAt ? ` (מ-${fmtDate(Date.parse(d.exportedAt))})` : ''}.</p>
-    <button class="btn" id="imMerge">מיזוג עם מה שכבר שמור</button>
-    <div class="row"><button class="btn ghost" id="imReplace">החלפת הכול בגיבוי</button></div>`, s => {
+  const tweets = d.tweets.filter(x => x && x.id && x.url);
+  openSheet(`<h4 style="margin-top:4px">${t('restoreTitle')}</h4>
+    <p class="meta" style="margin:0 2px 12px">${t('backupContents', folders.length, tweets.length, d.exportedAt ? fmtDate(Date.parse(d.exportedAt)) : '')}</p>
+    <button class="btn" id="imMerge">${t('merge')}</button>
+    <div class="row"><button class="btn ghost" id="imReplace">${t('replace')}</button></div>`, s => {
     const doIt = async replace => {
-      if (replace && !confirm('כל מה ששמור עכשיו יימחק ויוחלף בגיבוי. להמשיך?')) return;
+      if (replace && !confirm(t('confirmReplace'))) return;
       if (replace){ await clearStore('folders'); await clearStore('tweets'); }
       await putMany('folders', folders); await putMany('tweets', tweets);
-      await load(); closeSheet(); toast('השחזור הושלם'); location.hash = '/'; route();
+      await load(); closeSheet(); toast(t('restoreDone')); location.hash = '/'; route();
     };
     s.querySelector('#imMerge').onclick = () => doIt(false);
     s.querySelector('#imReplace').onclick = () => doIt(true);
@@ -475,86 +574,86 @@ $('#importFile').addEventListener('change', async e => {
 
 /* ---------- views ---------- */
 function setHeader(title, back, actions = ''){
-  $('#top').innerHTML = `${back ? `<button class="iconbtn" onclick="location.hash='/'" aria-label="חזרה">${ICON.back}</button>` : ''}<h1>${esc(title)}</h1>${actions}`;
+  $('#top').innerHTML = `${back ? `<button class="iconbtn back" onclick="location.hash='/'" aria-label="${esc(t('back'))}">${ICON.back}</button>` : ''}<h1 dir="auto">${esc(title)}</h1>${actions}`;
 }
 function banners(){
   let h = '';
-  if (isIOS && !isStandalone())
-    h += `<div class="banner"><span>כדי שהשמירות יישמרו לאורך זמן, כדאי להוסיף למסך הבית: כפתור השיתוף ב-Safari ← "הוספה למסך הבית".</span></div>`;
+  if (isIOS && !isStandalone()) h += `<div class="banner"><span>${t('installHint')}</span></div>`;
   const last = +ls.get('lastExport') || 0;
   if (state.tweets.length >= 5 && Date.now() - last > 30 * 864e5)
-    h += `<div class="banner"><span>${last ? 'עבר יותר מחודש מהגיבוי האחרון.' : 'עוד לא גיבית את השמורים.'}</span><button onclick="exportData()">גיבוי</button></div>`;
+    h += `<div class="banner"><span>${last ? t('backupOld') : t('backupNever')}</span><button onclick="exportData()">${t('backupBtn')}</button></div>`;
   return h;
 }
 function boardTile(f, ts, href){
   const cells = [];
-  for (const t of ts){ const th = thumbOf(t); if (th) cells.push(`<img src="${esc(th)}" loading="lazy" referrerpolicy="no-referrer" alt="">`); if (cells.length === 3) break; }
-  for (const t of ts){ if (cells.length === 3) break; if (!thumbOf(t) && t.text) cells.push(`<div class="txt" dir="auto">${esc(t.text.slice(0, 120))}</div>`); }
+  for (const tw of ts){ const th = thumbOf(tw); if (th) cells.push(`<img src="${esc(th)}" loading="lazy" referrerpolicy="no-referrer" alt="">`); if (cells.length === 3) break; }
+  for (const tw of ts){ if (cells.length === 3) break; if (!thumbOf(tw) && tw.text) cells.push(`<div class="txt" dir="auto">${esc(tw.text.slice(0, 120))}</div>`); }
   while (cells.length < 3) cells.push('<div class="blank"></div>');
-  return `<a class="board" href="${href}"><div class="collage">${cells.join('')}</div><h3>${esc(f.name)}</h3><small>${ts.length} ציוצים</small></a>`;
+  return `<a class="board" href="${href}"><div class="collage">${cells.join('')}</div><h3 dir="auto">${esc(f.name)}</h3><small>${t('tweetsCount', ts.length)}</small></a>`;
 }
 function viewHome(){
-  setHeader('ציוצייה', false,
-    `<button class="iconbtn" onclick="location.hash='/search'" aria-label="חיפוש">${ICON.search}</button><button class="iconbtn" onclick="location.hash='/settings'" aria-label="הגדרות">${ICON.gear}</button>`);
+  setHeader(t('app'), false,
+    `<button class="iconbtn" onclick="location.hash='/search'" aria-label="${esc(t('search'))}">${ICON.search}</button><button class="iconbtn" onclick="location.hash='/settings'" aria-label="${esc(t('settings'))}">${ICON.gear}</button>`);
   let h = banners();
   if (!state.tweets.length && !state.folders.length){
-    h += emptyState('עוד אין כאן כלום', `<p>ככה שומרים ציוץ ראשון:</p><ol>
-      <li>באפליקציה של X לוחצים <b>שיתוף</b> על ציוץ</li><li>בוחרים <b>העתקת קישור</b></li>
-      <li>חוזרים לכאן ולוחצים <b>שמירת ציוץ</b></li><li>בוחרים תיקייה, וזהו</li></ol>`);
+    h += emptyState(t('emptyTitle'), `<p>${t('emptyIntro')}</p><ol>${t('emptySteps').map(s => `<li>${s}</li>`).join('')}</ol>`);
   } else {
     const all = [...state.tweets].sort((a, b) => b.savedAt - a.savedAt);
-    h += '<div class="boards">' + boardTile({ name: 'כל הציוצים' }, all, '#/all');
+    h += '<div class="boards">' + boardTile({ name: t('allTweets') }, all, '#/all');
     for (const f of sortedFolders()) h += boardTile(f, tweetsIn(f.id), '#/f/' + encodeURIComponent(f.id));
-    h += `<div class="board" onclick="newFolderFlow()"><div class="collage add">＋</div><h3>תיקייה חדשה</h3></div></div>`;
+    h += `<div class="board" onclick="newFolderFlow()"><div class="collage add">＋</div><h3>${t('newFolder')}</h3></div></div>`;
   }
   $('#view').innerHTML = h;
 }
 function viewFolder(fid){
   const f = fid ? state.folders.find(x => x.id === fid) : null;
   if (fid && !f){ location.hash = '/'; return; }
-  setHeader(f ? f.name : 'כל הציוצים', true,
-    f ? `<button class="iconbtn" onclick="folderMenu('${esc(f.id)}')" aria-label="אפשרויות">${ICON.more}</button>` : '');
+  setHeader(f ? f.name : t('allTweets'), true,
+    f ? `<button class="iconbtn" onclick="folderMenu('${esc(f.id)}')" aria-label="${esc(t('options'))}">${ICON.more}</button>` : '');
   const ts = f ? tweetsIn(f.id) : [...state.tweets].sort((a, b) => b.savedAt - a.savedAt);
   $('#view').innerHTML = ts.length ? `<div class="masonry">${ts.map(cardHTML).join('')}</div>`
-    : emptyState('התיקייה ריקה', '<p>שמרי לכאן ציוץ עם הכפתור למטה.</p>');
+    : emptyState(t('folderEmptyTitle'), `<p>${t('folderEmptyBody')}</p>`);
 }
 let searchQ = '';
 function viewSearch(){
-  setHeader('חיפוש', true);
-  $('#view').innerHTML = `<div class="searchbox"><input id="q" type="search" placeholder="טקסט, הערה, שם או תיקייה" value="${esc(searchQ)}" dir="auto"></div><div id="res"></div>`;
+  setHeader(t('searchTitle'), true);
+  $('#view').innerHTML = `<div class="searchbox"><input id="q" type="search" placeholder="${esc(t('searchPh'))}" value="${esc(searchQ)}" dir="auto"></div><div id="res"></div>`;
   const q = $('#q');
   const doSearch = () => {
     searchQ = q.value; const s = searchQ.trim().toLowerCase();
     if (!s){ $('#res').innerHTML = ''; return; }
-    const hits = state.tweets.filter(t => [t.text, t.note, t.author?.name, t.author?.handle, t.quote?.text, folderName(t.folderId)]
+    const hits = state.tweets.filter(x => [x.text, x.note, x.author?.name, x.author?.handle, x.quote?.text, folderName(x.folderId)]
       .some(v => (v || '').toLowerCase().includes(s))).sort((a, b) => b.savedAt - a.savedAt);
-    $('#res').innerHTML = hits.length ? `<div class="masonry">${hits.map(cardHTML).join('')}</div>` : `<div class="empty">לא נמצא כלום</div>`;
+    $('#res').innerHTML = hits.length ? `<div class="masonry">${hits.map(cardHTML).join('')}</div>` : `<div class="empty">${t('noResults')}</div>`;
   };
   q.addEventListener('input', doSearch); doSearch(); setTimeout(() => q.focus(), 50);
 }
 async function viewSettings(){
-  setHeader('הגדרות וגיבוי', true);
+  setHeader(t('settingsTitle'), true);
   const last = +ls.get('lastExport') || 0;
   let persisted = null; try { persisted = await navigator.storage?.persisted?.(); } catch {}
   $('#view').innerHTML = `
-    <div class="section"><h3>גיבוי ושחזור</h3>
-      <p>הכול נשמר רק בטלפון הזה. כדאי לייצא גיבוי מדי פעם ולשמור אותו ב"קבצים" או ב-iCloud.</p>
-      <p>גיבוי אחרון: <b>${last ? fmtDate(last) : 'עוד לא'}</b></p>
-      <button class="btn" onclick="exportData()">ייצוא גיבוי (JSON)</button>
-      <button class="btn ghost" onclick="document.getElementById('importFile').click()">שחזור מקובץ גיבוי</button>
+    <div class="section"><h3>${t('language')} · Language</h3>
+      <div class="chips">${LANGS.map(l => `<button class="chip ${l.code === lang ? 'on' : ''}" data-lang="${l.code}">${l.label}</button>`).join('')}</div>
     </div>
-    <div class="section"><h3>איך שומרים ציוץ</h3><ol>
-      <li>באפליקציה של X: <b>שיתוף</b> ← <b>העתקת קישור</b></li>
-      <li>פותחים את ציוצייה ולוחצים <b>שמירת ציוץ</b> (אם iOS שואל, מאשרים "הדבקה")</li>
-      <li>בוחרים תיקייה ושומרים</li></ol>
-      <p>את התוכן של הציוץ (טקסט, תמונות) האפליקציה מושכת דרך השירות הציבורי FxTwitter.</p>
+    <div class="section"><h3>${t('backupTitle')}</h3>
+      <p>${t('backupText')}</p>
+      <p>${t('lastBackup')}: <b>${last ? fmtDate(last) : t('never')}</b></p>
+      <button class="btn" onclick="exportData()">${t('exportBtn')}</button>
+      <button class="btn ghost" onclick="document.getElementById('importFile').click()">${t('importBtn')}</button>
     </div>
-    <div class="section"><h3>מצב</h3>
-      <div class="stat"><span>ציוצים</span><b>${state.tweets.length}</b></div>
-      <div class="stat"><span>תיקיות</span><b>${state.folders.length}</b></div>
-      <div class="stat"><span>מותקן במסך הבית</span><b>${isStandalone() ? 'כן' : 'לא'}</b></div>
-      ${persisted !== null && persisted !== undefined ? `<div class="stat"><span>אחסון מוגן ממחיקה אוטומטית</span><b>${persisted ? 'כן' : 'לא'}</b></div>` : ''}
+    <div class="section"><h3>${t('howTitle')}</h3><ol>${t('howSteps').map(s => `<li>${s}</li>`).join('')}</ol>
+      <p>${t('fxNote')}</p>
+    </div>
+    <div class="section"><h3>${t('statusTitle')}</h3>
+      <div class="stat"><span>${t('tweets')}</span><b>${state.tweets.length}</b></div>
+      <div class="stat"><span>${t('folders')}</span><b>${state.folders.length}</b></div>
+      <div class="stat"><span>${t('installed')}</span><b>${isStandalone() ? t('yes') : t('no')}</b></div>
+      ${persisted !== null && persisted !== undefined ? `<div class="stat"><span>${t('persisted')}</span><b>${persisted ? t('yes') : t('no')}</b></div>` : ''}
     </div>`;
+  $('#view').querySelectorAll('[data-lang]').forEach(b => b.onclick = () => {
+    ls.set('lang', b.dataset.lang); applyLang(b.dataset.lang); viewSettings();
+  });
 }
 function route(){
   const h = decodeURIComponent(location.hash.slice(1) || '/');
@@ -573,8 +672,10 @@ $('#view').addEventListener('click', e => {
 /* ---------- boot ---------- */
 async function load(){ state.folders = await getAll('folders'); state.tweets = await getAll('tweets'); }
 (async () => {
+  const saved = ls.get('lang');
+  applyLang(saved || ((navigator.language || '').toLowerCase().startsWith('he') ? 'he' : 'en'));
   try { db = await openDB(); await load(); }
-  catch (e){ $('#view').innerHTML = emptyState('אין גישה לאחסון', `<p>${esc(e?.message || e)}</p>`); return; }
+  catch (e){ $('#view').innerHTML = emptyState(t('storageError'), `<p>${esc(e?.message || e)}</p>`); return; }
   route();
   const qp = new URLSearchParams(location.search);
   const shared = [qp.get('url'), qp.get('text'), qp.get('title')].filter(Boolean).join(' ');

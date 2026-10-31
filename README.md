@@ -13,7 +13,8 @@ No framework, no build step: plain HTML, CSS and JavaScript.
 - **Move, edit and delete** saved tweets; rename and delete folders
 - **Backup and restore** to a JSON file (merge or full replace), with a reminder if you haven't backed up in a month
 - **Works offline**: the app shell and tweet images are cached by a service worker
-- **RTL / Hebrew UI** with light and dark mode
+- **English and Hebrew** interface with full RTL support. Choose the language in Settings; the choice is remembered on the device (the default follows the device language)
+- **Light and dark mode**, following the system setting
 
 ## Deploy (GitHub Pages, free)
 
