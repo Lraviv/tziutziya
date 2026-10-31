@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ציוצייה</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ציוצייה">
+<meta name="theme-color" content="#f6f4f0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141416" media="(prefers-color-scheme: dark)">
+<style>
+:root{
+  --bg:#f6f4f0;--card:#fff;--ink:#1d1c1a;--muted:#78746c;--line:#e6e2da;
+  --accent:#2f5bd3;--accent-ink:#fff;--chip:#ece9e3;--danger:#c92a2a;--warn:#fff4d6;--warn-ink:#6b4e00;
+  --shadow:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#141416;--card:#1f1f23;--ink:#f1efea;--muted:#9a978f;--line:#2e2e33;
+  --accent:#7096ff;--accent-ink:#0d0d10;--chip:#2a2a30;--warn:#3a3020;--warn-ink:#f3d58c;--shadow:none;
+}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Rubik,Arial,sans-serif}
+body{padding-bottom:calc(96px + env(safe-area-inset-bottom));min-height:100vh}
+a{color:var(--accent)}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;gap:8px}
+header h1{font-size:23px;margin:0;flex:1;font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:-.2px}
+.iconbtn{width:40px;height:40px;flex:none;border-radius:50%;border:0;background:var(--chip);color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}
+.iconbtn svg{width:20px;height:20px}
+main{padding:2px 12px 0}
+.banner{background:var(--warn);color:var(--warn-ink);border-radius:14px;padding:10px 12px;font-size:14px;margin:0 2px 14px;display:flex;gap:10px;align-items:center}
+.banner span{flex:1}
+.banner button{border:0;background:var(--warn-ink);color:var(--warn);border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;font-weight:600}
+.boards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px 10px}
+@media(min-width:700px){.boards{grid-template-columns:repeat(4,1fr)}}
+.board{color:inherit;text-decoration:none;cursor:pointer;display:block;min-width:0}
+.collage{aspect-ratio:1;border-radius:18px;overflow:hidden;display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;gap:2px;background:var(--line)}
+.collage>*:first-child{grid-row:1/3}
+.collage img{width:100%;height:100%;object-fit:cover;display:block}
+.collage .txt{background:var(--card);padding:8px;font-size:11px;line-height:1.35;color:var(--muted);overflow:hidden}
+.collage .blank{background:var(--card)}
+.collage.add{display:grid;place-items:center;grid-template-columns:1fr;grid-template-rows:1fr;background:transparent;border:2px dashed var(--line);font-size:34px;color:var(--muted)}
+.board h3{margin:7px 3px 0;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.board small{color:var(--muted);margin-inline-start:3px;font-size:13px}
+.masonry{column-count:2;column-gap:10px}
+@media(min-width:700px){.masonry{column-count:3}}
+@media(min-width:1050px){.masonry{column-count:4}}
+.card{break-inside:avoid;background:var(--card);border-radius:16px;margin:0 0 10px;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;display:block}
+.media{position:relative;background:var(--line)}
+.media img{width:100%;display:block}
+.play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center;font-size:15px;padding-left:3px}
+.count{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;border-radius:999px;padding:2px 7px;direction:ltr}
+.card .body{padding:10px 11px 11px}
+.author{display:flex;align-items:center;gap:7px;min-width:0}
+.author img{width:24px;height:24px;border-radius:50%;flex:none;background:var(--line)}
+.author .nm{min-width:0;display:flex;flex-direction:column;line-height:1.2}
+.author b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.author span{font-size:12px;color:var(--muted);direction:ltr;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.text{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;margin-top:7px}
+.card .text{display:-webkit-box;-webkit-line-clamp:9;-webkit-box-orient:vertical;overflow:hidden}
+.note{margin-top:8px;font-size:12.5px;background:var(--chip);border-radius:10px;padding:6px 8px;white-space:pre-wrap}
+.quote{margin-top:8px;border:1px solid var(--line);border-radius:12px;padding:7px 9px;font-size:13px}
+.quote b{font-size:12px}
+.empty{text-align:center;color:var(--muted);padding:40px 20px}
+.empty h2{color:var(--ink);font-size:20px;margin:10px 0 6px}
+.empty ol{text-align:right;display:inline-block;margin:14px auto 0;padding-inline-start:20px;line-height:1.9}
+#fab{position:fixed;z-index:6;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);border:0;border-radius:999px;background:var(--ink);color:var(--bg);font:inherit;font-weight:650;padding:14px 24px;box-shadow:0 6px 22px rgba(0,0,0,.25);display:flex;gap:8px;align-items:center;cursor:pointer;white-space:nowrap}
+#fab svg{width:18px;height:18px}
+#sheetWrap{position:fixed;inset:0;z-index:20}
+#sheetWrap[hidden]{display:none}
+.backdrop{position:absolute;inset:0;background:rgba(0,0,0,.38)}
+.sheet{position:absolute;inset-inline:0;bottom:0;max-height:90vh;overflow:auto;-webkit-overflow-scrolling:touch;background:var(--bg);border-radius:22px 22px 0 0;padding:10px 16px calc(18px + env(safe-area-inset-bottom));animation:up .22s ease-out;max-width:640px;margin:0 auto}
+@keyframes up{from{transform:translateY(100%)}}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 12px}
+.sheet h4{margin:16px 2px 8px;font-size:15px}
+.sheet .pv{background:var(--card);border-radius:16px;padding:11px;box-shadow:var(--shadow)}
+.sheet .pv .media{border-radius:12px;overflow:hidden;margin-top:8px}
+.sheet .pv .media img{max-height:260px;object-fit:cover}
+.gallery{display:grid;gap:4px;margin-top:9px;border-radius:12px;overflow:hidden}
+.gallery img,.gallery video{width:100%;display:block;background:var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:0;background:var(--chip);color:var(--ink);border-radius:999px;padding:9px 15px;font:inherit;font-size:14px;cursor:pointer}
+.chip.on{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.chip.add{background:transparent;border:1.5px dashed var(--line);color:var(--muted)}
+.inline{display:flex;gap:8px;margin-top:10px}
+.inline .btn{width:auto;padding:0 18px}
+.btn{display:block;text-align:center;text-decoration:none;width:100%;border:0;border-radius:14px;padding:14px;font:inherit;font-weight:650;background:var(--accent);color:var(--accent-ink);cursor:pointer}
+.btn.ghost{background:var(--chip);color:var(--ink)}
+.btn.danger{background:transparent;color:var(--danger);font-weight:500}
+.btn:disabled{opacity:.5}
+.row{margin-top:12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+input,textarea{width:100%;font:inherit;font-size:16px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:11px 12px;outline:none}
+input:focus,textarea:focus{border-color:var(--accent)}
+textarea{resize:vertical;margin-top:12px}
+.meta{color:var(--muted);font-size:13px;margin:10px 2px 0}
+.warn{background:var(--warn);color:var(--warn-ink);border-radius:12px;padding:8px 11px;font-size:13.5px;margin-top:10px}
+.skel{height:14px;border-radius:7px;background:var(--line);margin:8px 0;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.5}}
+.section{background:var(--card);border-radius:18px;padding:14px 16px;margin:0 2px 14px;box-shadow:var(--shadow)}
+.section h3{margin:0 0 6px;font-size:16px}
+.section p,.section li{color:var(--muted);font-size:14px;margin:4px 0}
+.section ol{padding-inline-start:20px;margin:6px 0}
+.section .btn{margin-top:10px}
+.stat{display:flex;justify-content:space-between;font-size:14px;padding:4px 0}
+.searchbox{margin:0 2px 14px}
+#toast{position:fixed;z-index:30;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;max-width:88vw;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<header id="top"></header>
+<main id="view"></main>
+<button id="fab" aria-label="שמירת ציוץ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>שמירת ציוץ</button>
+<div id="sheetWrap" hidden><div class="backdrop"></div><div class="sheet" role="dialog" aria-modal="true"></div></div>
+<div id="toast" role="status"></div>
+<input type="file" id="importFile" accept=".json,application/json" hidden>
+
+<script>
+'use strict';
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const fmtDate = ms => ms ? new Intl.DateTimeFormat('he-IL', {day:'numeric', month:'short', year:'numeric'}).format(new Date(ms)) : '';
+const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isStandalone = () => navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
+const ls = {
+  get(k){ try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v){ try { localStorage.setItem(k, v); } catch {} }
+};
+const ICON = {
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>',
+  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  more:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>'
+};
+function linkify(s){
+  return esc(s).replace(/https?:\/\/[^\s<]+/g, u =>
+    `<a href="${u}" target="_blank" rel="noopener" onclick="event.stopPropagation()" dir="ltr">${u.replace(/^https?:\/\/(www\.)?/, '').slice(0, 38)}${u.length > 46 ? '…' : ''}</a>`);
+}
+let toastTimer;
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* ---------- storage (IndexedDB) ---------- */
+const state = { folders: [], tweets: [] };
+let db;
+function openDB(){
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('tziutziya', 1);
+    r.onupgradeneeded = () => {
+      const d = r.result;
+      if (!d.objectStoreNames.contains('folders')) d.createObjectStore('folders', {keyPath:'id'});
+      if (!d.objectStoreNames.contains('tweets')) d.createObjectStore('tweets', {keyPath:'id'}).createIndex('folderId', 'folderId');
+    };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+function run(store, mode, fn){
+  return new Promise((res, rej) => {
+    const t = db.transaction(store, mode); const s = t.objectStore(store);
+    let out; const r = fn(s); if (r) r.onsuccess = () => { out = r.result; };
+    t.oncomplete = () => res(out); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error);
+  });
+}
+const getAll = store => run(store, 'readonly', s => s.getAll());
+const putOne = (store, v) => run(store, 'readwrite', s => s.put(v));
+const delOne = (store, k) => run(store, 'readwrite', s => s.delete(k));
+const putMany = (store, items) => run(store, 'readwrite', s => { items.forEach(i => s.put(i)); });
+const clearStore = store => run(store, 'readwrite', s => s.clear());
+
+async function saveFolder(f){ await putOne('folders', f); const i = state.folders.findIndex(x => x.id === f.id); i < 0 ? state.folders.push(f) : state.folders[i] = f; }
+async function saveTweet(t){ await putOne('tweets', t); const i = state.tweets.findIndex(x => x.id === t.id); i < 0 ? state.tweets.push(t) : state.tweets[i] = t; }
+async function removeTweet(id){ await delOne('tweets', id); state.tweets = state.tweets.filter(t => t.id !== id); }
+async function createFolder(name){
+  name = (name || '').trim(); if (!name) return null;
+  const dup = state.folders.find(f => f.name === name); if (dup) return dup;
+  const f = { id: uid(), name, createdAt: Date.now() }; await saveFolder(f); return f;
+}
+let persistAsked = false;
+async function askPersist(){
+  if (persistAsked) return; persistAsked = true;
+  try { await navigator.storage?.persist?.(); } catch {}
+}
+
+/* ---------- data helpers ---------- */
+const tweetsIn = fid => state.tweets.filter(t => t.folderId === fid).sort((a, b) => b.savedAt - a.savedAt);
+const folderName = fid => state.folders.find(f => f.id === fid)?.name || '';
+function sortedFolders(){
+  const last = fid => Math.max(0, ...state.tweets.filter(t => t.folderId === fid).map(t => t.savedAt));
+  return [...state.folders].sort((a, b) => (last(b.id) || b.createdAt) - (last(a.id) || a.createdAt));
+}
+function sized(u, n){ return u && u.includes('pbs.twimg.com/media') ? u.split('?')[0] + '?name=' + n : u; }
+function thumbOf(t){ const m = t.media?.[0]; if (!m) return null; return m.type === 'photo' ? sized(m.url, 'small') : (m.thumb || null); }
+
+/* ---------- tweet fetching ---------- */
+function parseTweetUrl(text){
+  const m = String(text || '').match(/(?:twitter\.com|x\.com)\/([A-Za-z0-9_]+)\/status(?:es)?\/(\d+)/i);
+  if (!m) return null;
+  const user = /^(i|web)$/i.test(m[1]) ? null : m[1];
+  return { user, id: m[2], url: user ? `https://x.com/${user}/status/${m[2]}` : `https://x.com/i/status/${m[2]}` };
+}
+async function fetchTweet(p){
+  const urls = [`https://api.fxtwitter.com/status/${p.id}`];
+  if (p.user) urls.push(`https://api.fxtwitter.com/${p.user}/status/${p.id}`);
+  for (const u of urls){
+    try {
+      const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 9000);
+      const r = await fetch(u, { signal: ctrl.signal }); clearTimeout(to);
+      if (!r.ok) continue;
+      const j = await r.json();
+      if (j && j.tweet) return normalize(j.tweet, p);
+    } catch {}
+  }
+  return null;
+}
+function normMedia(m){
+  const list = (m && (m.all || [...(m.photos || []), ...(m.videos || [])])) || [];
+  return list.map(x => x.type === 'photo'
+    ? { type:'photo', url:x.url, w:x.width, h:x.height }
+    : { type:x.type || 'video', url:x.url, thumb:x.thumbnail_url, w:x.width, h:x.height });
+}
+function normalize(t, p){
+  const handle = t.author?.screen_name || p.user || '';
+  return {
+    url: handle ? `https://x.com/${handle}/status/${p.id}` : p.url,
+    text: typeof t.text === 'string' ? t.text : (t.raw_text?.text || ''),
+    author: { name: t.author?.name || handle, handle, avatar: t.author?.avatar_url || '' },
+    createdAt: t.created_timestamp ? t.created_timestamp * 1000 : (t.created_at ? Date.parse(t.created_at) : null),
+    media: normMedia(t.media),
+    quote: t.quote ? { name: t.quote.author?.name || '', handle: t.quote.author?.screen_name || '', text: t.quote.text || '' } : null,
+    fetched: true
+  };
+}
+
+/* ---------- rendering pieces ---------- */
+function authorHTML(t){
+  const a = t.author || {};
+  return `<div class="author">${a.avatar ? `<img src="${esc(a.avatar)}" loading="lazy" referrerpolicy="no-referrer" alt="">` : ''}
+    <div class="nm"><b>${esc(a.name || (a.handle ? '@' + a.handle : 'ציוץ'))}</b>${a.handle ? `<span>@${esc(a.handle)}</span>` : ''}</div></div>`;
+}
+function quoteHTML(t){
+  if (!t.quote) return '';
+  return `<div class="quote" dir="auto"><b>${esc(t.quote.name)}</b> <span style="color:var(--muted);font-size:12px" dir="ltr">@${esc(t.quote.handle)}</span><div class="text" style="margin-top:3px;font-size:13px">${linkify(t.quote.text)}</div></div>`;
+}
+function cardMedia(t){
+  if (!t.media?.length) return '';
+  const m = t.media[0]; const src = thumbOf(t); if (!src) return '';
+  const ratio = m.w && m.h ? ` style="aspect-ratio:${m.w}/${m.h}"` : '';
+  return `<div class="media"><img src="${esc(src)}" loading="lazy" referrerpolicy="no-referrer" alt=""${ratio}>${m.type !== 'photo' ? '<span class="play">▶</span>' : ''}${t.media.length > 1 ? `<span class="count">1/${t.media.length}</span>` : ''}</div>`;
+}
+function cardHTML(t){
+  const fallback = !t.fetched && !t.text ? `<div class="text" style="color:var(--muted)">נשמר כקישור בלבד</div>` : '';
+  return `<article class="card" data-id="${esc(t.id)}">${cardMedia(t)}<div class="body">${authorHTML(t)}
+    ${t.text ? `<div class="text" dir="auto">${linkify(t.text)}</div>` : fallback}
+    ${t.note ? `<div class="note" dir="auto">${esc(t.note)}</div>` : ''}</div></article>`;
+}
+function galleryHTML(t){
+  if (!t.media?.length) return '';
+  const cols = t.media.length > 1 ? 'grid-template-columns:1fr 1fr' : '';
+  return `<div class="gallery" style="${cols}">${t.media.map(m => m.type === 'photo'
+    ? `<a href="${esc(sized(m.url, 'orig'))}" target="_blank" rel="noopener"><img src="${esc(sized(m.url, 'medium'))}" loading="lazy" referrerpolicy="no-referrer" alt=""></a>`
+    : `<video src="${esc(m.url)}" poster="${esc(m.thumb || '')}" controls playsinline preload="none" ${m.type === 'gif' ? 'loop muted' : ''}></video>`).join('')}</div>`;
+}
+function fullTweetHTML(t){
+  return `<div class="pv">${authorHTML(t)}
+    ${t.text ? `<div class="text" dir="auto" style="font-size:15.5px">${linkify(t.text)}</div>` : ''}
+    ${galleryHTML(t)}${quoteHTML(t)}
+    ${t.createdAt ? `<div class="meta" style="margin:8px 0 0">${fmtDate(t.createdAt)}</div>` : ''}</div>`;
+}
+function previewHTML(t){
+  return `<div class="pv">${authorHTML(t)}${t.text ? `<div class="text" dir="auto" style="-webkit-line-clamp:5;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden">${linkify(t.text)}</div>` : ''}${cardMedia(t)}</div>`;
+}
+const skeletonHTML = `<div class="pv"><div class="skel" style="width:40%"></div><div class="skel"></div><div class="skel" style="width:75%"></div></div>`;
+function emptyState(title, body){ return `<div class="empty"><div style="font-size:40px">🗂️</div><h2>${title}</h2>${body}</div>`; }
+
+/* ---------- sheet ---------- */
+function openSheet(html, bind){
+  const w = $('#sheetWrap'); const s = w.querySelector('.sheet');
+  s.innerHTML = '<div class="grab"></div>' + html; s.scrollTop = 0;
+  w.hidden = false; document.body.style.overflow = 'hidden';
+  bind && bind(s);
+}
+function closeSheet(){ $('#sheetWrap').hidden = true; document.body.style.overflow = ''; }
+$('#sheetWrap .backdrop').addEventListener('click', closeSheet);
+
+function folderChips(container, selected, onPick, {allowNew = true} = {}){
+  const render = () => {
+    container.innerHTML = sortedFolders().map(f => `<button class="chip ${f.id === selected ? 'on' : ''}" data-f="${esc(f.id)}">${esc(f.name)}</button>`).join('')
+      + (allowNew ? `<button class="chip add" data-new="1">＋ תיקייה חדשה</button>` : '')
+      + (allowNew ? `<div class="inline" hidden style="width:100%"><input placeholder="שם התיקייה" maxlength="40"><button class="btn">הוספה</button></div>` : '');
+    container.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { selected = b.dataset.f; onPick(selected); render(); });
+    const nb = container.querySelector('[data-new]');
+    if (nb){
+      const box = container.querySelector('.inline'); const inp = box.querySelector('input');
+      nb.onclick = () => { box.hidden = false; nb.hidden = true; inp.focus(); };
+      const add = async () => { const f = await createFolder(inp.value); if (f){ selected = f.id; onPick(selected); render(); } };
+      box.querySelector('button').onclick = add;
+      inp.onkeydown = e => { if (e.key === 'Enter') add(); };
+    }
+  };
+  render();
+}
+
+/* ---------- save flow ---------- */
+async function startSave(raw){
+  const p = parseTweetUrl(raw);
+  if (!p){ toast('לא מצאתי קישור לציוץ'); return pasteSheet(raw); }
+  const existing = state.tweets.find(t => t.id === p.id);
+  let selected = existing?.folderId || ls.get('lastFolder');
+  if (!state.folders.some(f => f.id === selected)) selected = sortedFolders()[0]?.id || null;
+
+  openSheet(`<div id="pv">${existing ? previewHTML(existing) : skeletonHTML}</div>
+    ${existing ? `<div class="warn">הציוץ הזה כבר שמור בתיקייה «${esc(folderName(existing.folderId))}». אפשר להעביר אותו.</div>` : ''}
+    <h4>לאיזו תיקייה?</h4><div class="chips" id="fchips"></div>
+    <textarea id="note" rows="2" placeholder="הערה (לא חובה)" dir="auto">${esc(existing?.note || '')}</textarea>
+    <div class="row"><button class="btn" id="doSave">שמירה</button></div>`, s => {
+    folderChips(s.querySelector('#fchips'), selected, f => selected = f);
+
+    const dataP = existing ? Promise.resolve(existing) : fetchTweet(p);
+    if (!existing) dataP.then(d => {
+      const pv = s.querySelector('#pv'); if (!pv) return;
+      pv.innerHTML = d ? previewHTML(d)
+        : `<div class="pv"><b dir="ltr">${esc(p.url)}</b><div class="meta">לא הצלחתי למשוך את תוכן הציוץ כרגע. הוא יישמר כקישור, ואפשר לנסות שוב אחר כך.</div></div>`;
+    });
+
+    s.querySelector('#doSave').onclick = async e => {
+      const btn = e.currentTarget; btn.disabled = true; btn.textContent = 'שומר…';
+      try {
+        if (!selected){ const f = await createFolder('כללי'); selected = f.id; }
+        const data = await dataP;
+        const rec = Object.assign(
+          { id: p.id, url: p.url, author: { name: '', handle: p.user || '', avatar: '' }, text: '', media: [], quote: null, fetched: false, createdAt: null },
+          existing || {}, data || {},
+          { id: p.id, folderId: selected, note: s.querySelector('#note').value.trim(), savedAt: existing?.savedAt || Date.now() });
+        await saveTweet(rec);
+        ls.set('lastFolder', selected);
+        askPersist();
+        closeSheet();
+        toast(`נשמר בתיקייה «${folderName(selected)}»`);
+        route();
+      } catch (err){
+        btn.disabled = false; btn.textContent = 'שמירה'; toast('השמירה נכשלה: ' + (err?.message || err));
+      }
+    };
+  });
+}
+function pasteSheet(prefill = ''){
+  openSheet(`<h4 style="margin-top:4px">שמירת ציוץ</h4>
+    <p class="meta" style="margin:0 2px 10px">ב-X: שיתוף ← העתקת קישור, ואז הדביקי כאן.</p>
+    <input id="pasteIn" placeholder="https://x.com/…/status/…" dir="ltr" value="${esc(prefill)}" autocomplete="off">
+    <div class="row"><button class="btn" id="goPaste">המשך</button></div>`, s => {
+    const inp = s.querySelector('#pasteIn');
+    const go = () => { if (parseTweetUrl(inp.value)) startSave(inp.value); else toast('זה לא נראה כמו קישור לציוץ'); };
+    s.querySelector('#goPaste').onclick = go;
+    inp.onkeydown = e => { if (e.key === 'Enter') go(); };
+    setTimeout(() => inp.focus(), 250);
+  });
+}
+$('#fab').addEventListener('click', async () => {
+  let txt = '';
+  try { if (navigator.clipboard?.readText) txt = await navigator.clipboard.readText(); } catch {}
+  if (parseTweetUrl(txt)) startSave(txt); else pasteSheet();
+});
+
+/* ---------- tweet detail ---------- */
+function openTweet(id){
+  const t = state.tweets.find(x => x.id === id); if (!t) return;
+  openSheet(`${fullTweetHTML(t)}
+    ${t.note ? `<div class="note" dir="auto" style="margin-top:10px;font-size:14px">${esc(t.note)}</div>` : ''}
+    <div class="meta">בתיקייה <b>${esc(folderName(t.folderId) || '—')}</b> · נשמר ${fmtDate(t.savedAt)}</div>
+    <div class="row"><a class="btn" href="${esc(t.url)}" target="_blank" rel="noopener">פתיחה ב-X</a></div>
+    <div class="row2"><button class="btn ghost" data-a="move">העברה לתיקייה</button><button class="btn ghost" data-a="note">${t.note ? 'עריכת הערה' : 'הוספת הערה'}</button></div>
+    ${!t.fetched ? `<div class="row"><button class="btn ghost" data-a="refetch">ניסיון חוזר למשוך תוכן</button></div>` : ''}
+    <div class="row"><button class="btn danger" data-a="del">מחיקת הציוץ</button></div>`, s => {
+    s.querySelector('[data-a=move]').onclick = () => moveSheet(t);
+    s.querySelector('[data-a=note]').onclick = () => noteSheet(t);
+    s.querySelector('[data-a=del]').onclick = async () => {
+      if (!confirm('למחוק את הציוץ מהשמורים?')) return;
+      await removeTweet(t.id); closeSheet(); toast('נמחק'); route();
+    };
+    const rf = s.querySelector('[data-a=refetch]');
+    if (rf) rf.onclick = async () => {
+      rf.disabled = true; rf.textContent = 'מושך…';
+      const d = await fetchTweet(parseTweetUrl(t.url) || { id: t.id, user: t.author?.handle, url: t.url });
+      if (!d){ rf.disabled = false; rf.textContent = 'ניסיון חוזר למשוך תוכן'; return toast('עדיין לא הצליח'); }
+      await saveTweet(Object.assign({}, t, d)); route(); openTweet(t.id); toast('התוכן עודכן');
+    };
+  });
+}
+function moveSheet(t){
+  openSheet(`<h4 style="margin-top:4px">העברה לתיקייה</h4><div class="chips" id="mchips"></div>`, s => {
+    folderChips(s.querySelector('#mchips'), t.folderId, async fid => {
+      await saveTweet(Object.assign({}, t, { folderId: fid })); ls.set('lastFolder', fid);
+      closeSheet(); toast(`הועבר ל«${folderName(fid)}»`); route();
+    });
+  });
+}
+function noteSheet(t){
+  openSheet(`<h4 style="margin-top:4px">הערה</h4><textarea id="nt" rows="4" dir="auto" style="margin-top:0">${esc(t.note || '')}</textarea>
+    <div class="row"><button class="btn" id="svn">שמירה</button></div>`, s => {
+    const ta = s.querySelector('#nt'); setTimeout(() => ta.focus(), 250);
+    s.querySelector('#svn').onclick = async () => {
+      await saveTweet(Object.assign({}, t, { note: ta.value.trim() })); route(); openTweet(t.id);
+    };
+  });
+}
+
+/* ---------- folders ---------- */
+async function newFolderFlow(){
+  const name = prompt('שם התיקייה החדשה'); if (!name?.trim()) return;
+  await createFolder(name); route();
+}
+function folderMenu(fid){
+  const f = state.folders.find(x => x.id === fid); if (!f) return;
+  const n = tweetsIn(fid).length;
+  openSheet(`<h4 style="margin-top:4px">${esc(f.name)}</h4>
+    <button class="btn ghost" id="ren">שינוי שם</button>
+    <div class="row"><button class="btn danger" id="delf">מחיקת התיקייה${n ? ` ו-${n} הציוצים שבה` : ''}</button></div>`, s => {
+    s.querySelector('#ren').onclick = async () => {
+      const name = prompt('שם חדש', f.name); if (!name?.trim()) return;
+      await saveFolder(Object.assign({}, f, { name: name.trim() })); closeSheet(); route();
+    };
+    s.querySelector('#delf').onclick = async () => {
+      if (!confirm(n ? `למחוק את «${f.name}» ואת ${n} הציוצים שבה? אי אפשר לבטל.` : `למחוק את «${f.name}»?`)) return;
+      for (const t of tweetsIn(fid)) await removeTweet(t.id);
+      await delOne('folders', fid); state.folders = state.folders.filter(x => x.id !== fid);
+      closeSheet(); toast('התיקייה נמחקה'); location.hash = '/';
+    };
+  });
+}
+
+/* ---------- backup ---------- */
+async function exportData(){
+  const data = { app: 'tziutziya', version: 1, exportedAt: new Date().toISOString(), folders: state.folders, tweets: state.tweets };
+  const name = `tziutziya-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const done = () => { ls.set('lastExport', String(Date.now())); route(); };
+  try {
+    const file = new File([blob], name, { type: 'application/json' });
+    if (navigator.canShare?.({ files: [file] })){ await navigator.share({ files: [file], title: name }); return done(); }
+  } catch (e){ if (e?.name === 'AbortError') return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  done();
+}
+$('#importFile').addEventListener('change', async e => {
+  const file = e.target.files[0]; e.target.value = ''; if (!file) return;
+  let d; try { d = JSON.parse(await file.text()); } catch { return toast('הקובץ לא תקין'); }
+  if (!d || !Array.isArray(d.folders) || !Array.isArray(d.tweets)) return toast('זה לא קובץ גיבוי של ציוצייה');
+  const folders = d.folders.filter(f => f && f.id && f.name);
+  const tweets = d.tweets.filter(t => t && t.id && t.url);
+  openSheet(`<h4 style="margin-top:4px">שחזור מגיבוי</h4>
+    <p class="meta" style="margin:0 2px 12px">בקובץ: ${folders.length} תיקיות, ${tweets.length} ציוצים${d.exportedAt ? ` (מ-${fmtDate(Date.parse(d.exportedAt))})` : ''}.</p>
+    <button class="btn" id="imMerge">מיזוג עם מה שכבר שמור</button>
+    <div class="row"><button class="btn ghost" id="imReplace">החלפת הכול בגיבוי</button></div>`, s => {
+    const doIt = async replace => {
+      if (replace && !confirm('כל מה ששמור עכשיו יימחק ויוחלף בגיבוי. להמשיך?')) return;
+      if (replace){ await clearStore('folders'); await clearStore('tweets'); }
+      await putMany('folders', folders); await putMany('tweets', tweets);
+      await load(); closeSheet(); toast('השחזור הושלם'); location.hash = '/'; route();
+    };
+    s.querySelector('#imMerge').onclick = () => doIt(false);
+    s.querySelector('#imReplace').onclick = () => doIt(true);
+  });
+});
+
+/* ---------- views ---------- */
+function setHeader(title, back, actions = ''){
+  $('#top').innerHTML = `${back ? `<button class="iconbtn" onclick="location.hash='/'" aria-label="חזרה">${ICON.back}</button>` : ''}<h1>${esc(title)}</h1>${actions}`;
+}
+function banners(){
+  let h = '';
+  if (isIOS && !isStandalone())
+    h += `<div class="banner"><span>כדי שהשמירות יישמרו לאורך זמן, כדאי להוסיף למסך הבית: כפתור השיתוף ב-Safari ← "הוספה למסך הבית".</span></div>`;
+  const last = +ls.get('lastExport') || 0;
+  if (state.tweets.length >= 5 && Date.now() - last > 30 * 864e5)
+    h += `<div class="banner"><span>${last ? 'עבר יותר מחודש מהגיבוי האחרון.' : 'עוד לא גיבית את השמורים.'}</span><button onclick="exportData()">גיבוי</button></div>`;
+  return h;
+}
+function boardTile(f, ts, href){
+  const cells = [];
+  for (const t of ts){ const th = thumbOf(t); if (th) cells.push(`<img src="${esc(th)}" loading="lazy" referrerpolicy="no-referrer" alt="">`); if (cells.length === 3) break; }
+  for (const t of ts){ if (cells.length === 3) break; if (!thumbOf(t) && t.text) cells.push(`<div class="txt" dir="auto">${esc(t.text.slice(0, 120))}</div>`); }
+  while (cells.length < 3) cells.push('<div class="blank"></div>');
+  return `<a class="board" href="${href}"><div class="collage">${cells.join('')}</div><h3>${esc(f.name)}</h3><small>${ts.length} ציוצים</small></a>`;
+}
+function viewHome(){
+  setHeader('ציוצייה', false,
+    `<button class="iconbtn" onclick="location.hash='/search'" aria-label="חיפוש">${ICON.search}</button><button class="iconbtn" onclick="location.hash='/settings'" aria-label="הגדרות">${ICON.gear}</button>`);
+  let h = banners();
+  if (!state.tweets.length && !state.folders.length){
+    h += emptyState('עוד אין כאן כלום', `<p>ככה שומרים ציוץ ראשון:</p><ol>
+      <li>באפליקציה של X לוחצים <b>שיתוף</b> על ציוץ</li><li>בוחרים <b>העתקת קישור</b></li>
+      <li>חוזרים לכאן ולוחצים <b>שמירת ציוץ</b></li><li>בוחרים תיקייה, וזהו</li></ol>`);
+  } else {
+    const all = [...state.tweets].sort((a, b) => b.savedAt - a.savedAt);
+    h += '<div class="boards">' + boardTile({ name: 'כל הציוצים' }, all, '#/all');
+    for (const f of sortedFolders()) h += boardTile(f, tweetsIn(f.id), '#/f/' + encodeURIComponent(f.id));
+    h += `<div class="board" onclick="newFolderFlow()"><div class="collage add">＋</div><h3>תיקייה חדשה</h3></div></div>`;
+  }
+  $('#view').innerHTML = h;
+}
+function viewFolder(fid){
+  const f = fid ? state.folders.find(x => x.id === fid) : null;
+  if (fid && !f){ location.hash = '/'; return; }
+  setHeader(f ? f.name : 'כל הציוצים', true,
+    f ? `<button class="iconbtn" onclick="folderMenu('${esc(f.id)}')" aria-label="אפשרויות">${ICON.more}</button>` : '');
+  const ts = f ? tweetsIn(f.id) : [...state.tweets].sort((a, b) => b.savedAt - a.savedAt);
+  $('#view').innerHTML = ts.length ? `<div class="masonry">${ts.map(cardHTML).join('')}</div>`
+    : emptyState('התיקייה ריקה', '<p>שמרי לכאן ציוץ עם הכפתור למטה.</p>');
+}
+let searchQ = '';
+function viewSearch(){
+  setHeader('חיפוש', true);
+  $('#view').innerHTML = `<div class="searchbox"><input id="q" type="search" placeholder="טקסט, הערה, שם או תיקייה" value="${esc(searchQ)}" dir="auto"></div><div id="res"></div>`;
+  const q = $('#q');
+  const doSearch = () => {
+    searchQ = q.value; const s = searchQ.trim().toLowerCase();
+    if (!s){ $('#res').innerHTML = ''; return; }
+    const hits = state.tweets.filter(t => [t.text, t.note, t.author?.name, t.author?.handle, t.quote?.text, folderName(t.folderId)]
+      .some(v => (v || '').toLowerCase().includes(s))).sort((a, b) => b.savedAt - a.savedAt);
+    $('#res').innerHTML = hits.length ? `<div class="masonry">${hits.map(cardHTML).join('')}</div>` : `<div class="empty">לא נמצא כלום</div>`;
+  };
+  q.addEventListener('input', doSearch); doSearch(); setTimeout(() => q.focus(), 50);
+}
+async function viewSettings(){
+  setHeader('הגדרות וגיבוי', true);
+  const last = +ls.get('lastExport') || 0;
+  let persisted = null; try { persisted = await navigator.storage?.persisted?.(); } catch {}
+  $('#view').innerHTML = `
+    <div class="section"><h3>גיבוי ושחזור</h3>
+      <p>הכול נשמר רק בטלפון הזה. כדאי לייצא גיבוי מדי פעם ולשמור אותו ב"קבצים" או ב-iCloud.</p>
+      <p>גיבוי אחרון: <b>${last ? fmtDate(last) : 'עוד לא'}</b></p>
+      <button class="btn" onclick="exportData()">ייצוא גיבוי (JSON)</button>
+      <button class="btn ghost" onclick="document.getElementById('importFile').click()">שחזור מקובץ גיבוי</button>
+    </div>
+    <div class="section"><h3>איך שומרים ציוץ</h3><ol>
+      <li>באפליקציה של X: <b>שיתוף</b> ← <b>העתקת קישור</b></li>
+      <li>פותחים את ציוצייה ולוחצים <b>שמירת ציוץ</b> (אם iOS שואל, מאשרים "הדבקה")</li>
+      <li>בוחרים תיקייה ושומרים</li></ol>
+      <p>את התוכן של הציוץ (טקסט, תמונות) האפליקציה מושכת דרך השירות הציבורי FxTwitter.</p>
+    </div>
+    <div class="section"><h3>מצב</h3>
+      <div class="stat"><span>ציוצים</span><b>${state.tweets.length}</b></div>
+      <div class="stat"><span>תיקיות</span><b>${state.folders.length}</b></div>
+      <div class="stat"><span>מותקן במסך הבית</span><b>${isStandalone() ? 'כן' : 'לא'}</b></div>
+      ${persisted !== null && persisted !== undefined ? `<div class="stat"><span>אחסון מוגן ממחיקה אוטומטית</span><b>${persisted ? 'כן' : 'לא'}</b></div>` : ''}
+    </div>`;
+}
+function route(){
+  const h = decodeURIComponent(location.hash.slice(1) || '/');
+  window.scrollTo(0, 0);
+  if (h.startsWith('/f/')) return viewFolder(h.slice(3));
+  if (h === '/all') return viewFolder(null);
+  if (h === '/search') return viewSearch();
+  if (h === '/settings') return viewSettings();
+  viewHome();
+}
+window.addEventListener('hashchange', route);
+$('#view').addEventListener('click', e => {
+  const c = e.target.closest('.card'); if (c) openTweet(c.dataset.id);
+});
+
+/* ---------- boot ---------- */
+async function load(){ state.folders = await getAll('folders'); state.tweets = await getAll('tweets'); }
+(async () => {
+  try { db = await openDB(); await load(); }
+  catch (e){ $('#view').innerHTML = emptyState('אין גישה לאחסון', `<p>${esc(e?.message || e)}</p>`); return; }
+  route();
+  const qp = new URLSearchParams(location.search);
+  const shared = [qp.get('url'), qp.get('text'), qp.get('title')].filter(Boolean).join(' ');
+  if (shared){ history.replaceState(null, '', location.pathname + location.hash); startSave(shared); }
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+})();
+</script>
+</body>
+</html>
