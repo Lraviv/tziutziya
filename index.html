@@ -50,11 +50,25 @@ main{padding:2px 12px 0}
 .masonry{column-count:2;column-gap:10px}
 @media(min-width:700px){.masonry{column-count:3}}
 @media(min-width:1050px){.masonry{column-count:4}}
-.card{break-inside:avoid;background:var(--card);border-radius:16px;margin:0 0 10px;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;display:block}
+.card{break-inside:avoid;background:var(--card);border-radius:16px;margin:0 0 10px;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;display:block;position:relative;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;transition:transform .12s}
+.selecting .card{transform:scale(.97)}
+.selecting .card::after{content:'';position:absolute;top:8px;inset-inline-end:8px;width:24px;height:24px;border-radius:50%;border:2px solid #fff;background:rgba(0,0,0,.25);box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.selecting .card.sel{outline:3px solid var(--accent);outline-offset:-3px}
+.selecting .card.sel::after{background:var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/15px no-repeat;border-color:var(--accent)}
+#selbar{position:fixed;z-index:6;bottom:calc(14px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:flex;gap:6px;background:var(--ink);border-radius:999px;padding:6px;box-shadow:0 6px 22px rgba(0,0,0,.25)}
+#selbar[hidden]{display:none}
+#selbar button{border:0;border-radius:999px;background:transparent;color:var(--bg);font:inherit;font-weight:600;padding:10px 18px;cursor:pointer;white-space:nowrap}
+#selbar button:disabled{opacity:.4}
+#selbar .del{color:#ff8a8a}
+.textbtn{border:0;background:transparent;color:var(--accent);font:inherit;font-weight:600;padding:8px 6px;cursor:pointer;white-space:nowrap}
+.optlist{display:flex;flex-direction:column;gap:6px}
+.optlist button{display:flex;justify-content:space-between;align-items:center;border:0;background:var(--card);color:var(--ink);font:inherit;text-align:start;border-radius:12px;padding:13px 14px;cursor:pointer}
+.optlist button.on{font-weight:650;color:var(--accent)}
+.optlist button.on::after{content:'✓'}
 .media{position:relative;background:var(--line)}
 .media img{width:100%;display:block}
 .play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center;font-size:15px;padding-left:3px}
-.count{position:absolute;top:8px;inset-inline-end:8px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;border-radius:999px;padding:2px 7px;direction:ltr}
+.count{position:absolute;top:8px;inset-inline-start:8px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;border-radius:999px;padding:2px 7px;direction:ltr}
 .card .body{padding:10px 11px 11px}
 .author{display:flex;align-items:center;gap:7px;min-width:0}
 .author img{width:24px;height:24px;border-radius:50%;flex:none;background:var(--line)}
@@ -72,6 +86,7 @@ main{padding:2px 12px 0}
 .empty ol{text-align:start;display:inline-block;margin:14px auto 0;padding-inline-start:20px;line-height:1.9}
 #fab{position:fixed;z-index:6;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);border:0;border-radius:999px;background:var(--ink);color:var(--bg);font:inherit;font-weight:650;padding:14px 24px;box-shadow:0 6px 22px rgba(0,0,0,.25);display:flex;gap:8px;align-items:center;cursor:pointer;white-space:nowrap}
 #fab svg{width:18px;height:18px}
+#fab[hidden]{display:none}
 #sheetWrap{position:fixed;inset:0;z-index:20}
 #sheetWrap[hidden]{display:none}
 .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.38)}
@@ -122,6 +137,7 @@ textarea{resize:vertical;margin-top:12px}
 <body>
 <header id="top"></header>
 <main id="view"></main>
+<div id="selbar" hidden><button id="selMove"></button><button id="selDel" class="del"></button></div>
 <button id="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span id="fabLabel"></span></button>
 <div id="sheetWrap" hidden><div class="backdrop"></div><div class="sheet" role="dialog" aria-modal="true"></div></div>
 <div id="toast" role="status"></div>
@@ -156,7 +172,7 @@ const I18N = {
     confirmReplace: 'כל מה ששמור עכשיו יימחק ויוחלף בגיבוי. להמשיך?', restoreDone: 'השחזור הושלם',
     invalidFile: 'הקובץ לא תקין', notBackup: 'זה לא קובץ גיבוי של ציוצייה',
     installHint: 'כדי שהשמירות יישמרו לאורך זמן, כדאי להוסיף למסך הבית: כפתור השיתוף ב-Safari ← "הוספה למסך הבית".',
-    backupOld: 'עבר יותר מחודש מהגיבוי האחרון.', backupNever: 'עוד לא גיבית את השמורים.', backupBtn: 'גיבוי',
+    backupNever: 'עוד לא גיבית את השמורים.', backupBtn: 'גיבוי',
     allTweets: 'כל הציוצים', tweetsCount: n => n === 1 ? 'ציוץ אחד' : `${n} ציוצים`,
     emptyTitle: 'עוד אין כאן כלום', emptyIntro: 'ככה שומרים ציוץ ראשון:',
     emptySteps: ['באפליקציה של X לוחצים <b>שיתוף</b> על ציוץ', 'בוחרים <b>העתקת קישור</b>', 'חוזרים לכאן ולוחצים <b>שמירת ציוץ</b>', 'בוחרים תיקייה, וזהו'],
@@ -172,6 +188,16 @@ const I18N = {
     tags: 'תגיות', editTags: 'עריכת תגיות', addTagPh: 'תגית חדשה', allTags: 'הכל', done: 'סיום',
     tagsHint: 'לוחצים על תגית כדי להוסיף או להסיר אותה מהתיקייה.',
     noFoldersWithTag: n => `אין תיקיות עם התגית «${n}»`,
+    sort: 'מיון', sortSavedDesc: 'נשמרו לאחרונה', sortSavedAsc: 'נשמרו ראשונים', sortPostedDesc: 'פורסמו לאחרונה', sortPostedAsc: 'פורסמו ראשונים',
+    select: 'בחירה', selectAll: 'בחירת הכל', selectNone: 'ביטול בחירה', cancel: 'ביטול',
+    nSelected: n => n ? (n === 1 ? 'נבחר ציוץ אחד' : `נבחרו ${n} ציוצים`) : 'בחירת ציוצים',
+    move: 'העברה', delete: 'מחיקה',
+    confirmDeleteMany: n => n === 1 ? 'למחוק ציוץ אחד מהשמורים?' : `למחוק ${n} ציוצים מהשמורים?`,
+    movedMany: (n, f) => n === 1 ? `ציוץ אחד הועבר ל«${f}»` : `${n} ציוצים הועברו ל«${f}»`,
+    deletedMany: n => n === 1 ? 'ציוץ אחד נמחק' : `${n} ציוצים נמחקו`,
+    backupReminder: 'תזכורת לגיבוי', remindOff: 'כבוי', remindWeekly: 'כל שבוע', remind2Weeks: 'כל שבועיים', remindMonthly: 'כל חודש',
+    backupDue: n => n === 1 ? 'ציוץ חדש אחד מאז הגיבוי האחרון.' : `${n} ציוצים חדשים מאז הגיבוי האחרון.`,
+    later: 'אחר כך',
     yes: 'כן', no: 'לא', linkOnly: 'נשמר כקישור בלבד', tweetFallback: 'ציוץ', storageError: 'אין גישה לאחסון'
   },
   en: {
@@ -199,7 +225,7 @@ const I18N = {
     confirmReplace: 'Everything currently saved will be deleted and replaced by the backup. Continue?', restoreDone: 'Restore complete',
     invalidFile: 'Invalid file', notBackup: "This isn't a Tziutziya backup file",
     installHint: 'To keep your saves long-term, add this app to your home screen: Share button in Safari → "Add to Home Screen".',
-    backupOld: "It's been over a month since your last backup.", backupNever: "You haven't backed up your saves yet.", backupBtn: 'Back up',
+    backupNever: "You haven't backed up your saves yet.", backupBtn: 'Back up',
     allTweets: 'All tweets', tweetsCount: n => n === 1 ? '1 tweet' : `${n} tweets`,
     emptyTitle: 'Nothing here yet', emptyIntro: 'How to save your first tweet:',
     emptySteps: ['In the X app, tap <b>Share</b> on a tweet', 'Choose <b>Copy Link</b>', 'Come back here and tap <b>Save tweet</b>', 'Pick a folder, and you\'re done'],
@@ -215,6 +241,16 @@ const I18N = {
     tags: 'Tags', editTags: 'Edit tags', addTagPh: 'New tag', allTags: 'All', done: 'Done',
     tagsHint: 'Tap a tag to add it to or remove it from this folder.',
     noFoldersWithTag: n => `No folders tagged "${n}"`,
+    sort: 'Sort', sortSavedDesc: 'Recently saved', sortSavedAsc: 'Oldest saved', sortPostedDesc: 'Recently posted', sortPostedAsc: 'Oldest posted',
+    select: 'Select', selectAll: 'Select all', selectNone: 'Deselect all', cancel: 'Cancel',
+    nSelected: n => n ? (n === 1 ? '1 selected' : `${n} selected`) : 'Select tweets',
+    move: 'Move', delete: 'Delete',
+    confirmDeleteMany: n => n === 1 ? 'Delete 1 tweet from your saves?' : `Delete ${n} tweets from your saves?`,
+    movedMany: (n, f) => n === 1 ? `Moved 1 tweet to "${f}"` : `Moved ${n} tweets to "${f}"`,
+    deletedMany: n => n === 1 ? 'Deleted 1 tweet' : `Deleted ${n} tweets`,
+    backupReminder: 'Backup reminder', remindOff: 'Off', remindWeekly: 'Weekly', remind2Weeks: 'Every 2 weeks', remindMonthly: 'Monthly',
+    backupDue: n => n === 1 ? '1 new tweet since your last backup.' : `${n} new tweets since your last backup.`,
+    later: 'Later',
     yes: 'Yes', no: 'No', linkOnly: 'Saved as a link only', tweetFallback: 'Tweet', storageError: 'Storage unavailable'
   }
 };
@@ -246,6 +282,9 @@ const ICON = {
   back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
   search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>',
   gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  sort:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M3.5 16.5L7 20l3.5-3.5M17 20V4M13.5 7.5L17 4l3.5 3.5"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.8 2.8L16 10"/></svg>',
+  close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
   more:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>'
 };
 function linkify(s){
@@ -592,7 +631,7 @@ async function exportData(){
   const data = { app: 'tziutziya', version: 1, exportedAt: new Date().toISOString(), folders: state.folders, tweets: state.tweets };
   const name = `tziutziya-backup-${new Date().toISOString().slice(0, 10)}.json`;
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const done = () => { ls.set('lastExport', String(Date.now())); route(); };
+  const done = () => { ls.set('lastExport', String(Date.now())); ls.set('backupSnooze', '0'); route(); };
   try {
     const file = new File([blob], name, { type: 'application/json' });
     if (navigator.canShare?.({ files: [file] })){ await navigator.share({ files: [file], title: name }); return done(); }
@@ -629,11 +668,28 @@ function setHeader(title, back, actions = ''){
 function banners(){
   let h = '';
   if (isIOS && !isStandalone()) h += `<div class="banner"><span>${t('installHint')}</span></div>`;
-  const last = +ls.get('lastExport') || 0;
-  if (state.tweets.length >= 5 && Date.now() - last > 30 * 864e5)
-    h += `<div class="banner"><span>${last ? t('backupOld') : t('backupNever')}</span><button onclick="exportData()">${t('backupBtn')}</button></div>`;
+  if (backupDue()){
+    const last = +ls.get('lastExport') || 0;
+    const n = state.tweets.filter(x => x.savedAt > last).length;
+    h += `<div class="banner"><span>${last ? t('backupDue', n) : t('backupNever')}</span>
+      <button style="background:transparent;color:inherit" onclick="snoozeBackup()">${t('later')}</button>
+      <button onclick="exportData()">${t('backupBtn')}</button></div>`;
+  }
   return h;
 }
+const REMIND = [{ v: '0', k: 'remindOff' }, { v: '7', k: 'remindWeekly' }, { v: '14', k: 'remind2Weeks' }, { v: '30', k: 'remindMonthly' }];
+const remindDays = () => { const v = ls.get('backupEvery'); return REMIND.some(r => r.v === v) ? +v : 7; };
+function backupDue(){
+  const days = remindDays(); if (!days || !state.tweets.length) return false;
+  if (Date.now() < (+ls.get('backupSnooze') || 0)) return false;
+  const last = +ls.get('lastExport') || 0;
+  const fresh = state.tweets.filter(x => x.savedAt > last);
+  if (!fresh.length) return false;
+  // never backed up: remind once there's something worth keeping, or after the interval since the first save
+  if (!last) return state.tweets.length >= 5 || Date.now() - Math.min(...state.tweets.map(x => x.savedAt)) > days * 864e5;
+  return Date.now() - last > days * 864e5;
+}
+function snoozeBackup(){ ls.set('backupSnooze', String(Date.now() + 2 * 864e5)); route(); }
 function boardTile(f, ts, href){
   const cells = [];
   for (const tw of ts){ const th = thumbOf(tw); if (th) cells.push(`<img src="${esc(th)}" loading="lazy" referrerpolicy="no-referrer" alt="">`); if (cells.length === 3) break; }
@@ -665,14 +721,99 @@ function viewHome(){
   $('#view').innerHTML = h;
   $('#view').querySelectorAll('[data-filter]').forEach(b => b.onclick = () => { ls.set('tagFilter', b.dataset.filter); viewHome(); });
 }
+/* sorting */
+const SORTS = [
+  { v: 'saved-desc', k: 'sortSavedDesc' }, { v: 'saved-asc', k: 'sortSavedAsc' },
+  { v: 'posted-desc', k: 'sortPostedDesc' }, { v: 'posted-asc', k: 'sortPostedAsc' }
+];
+const sortKey = fid => 'sort:' + (fid || 'all');
+const getSort = fid => { const v = ls.get(sortKey(fid)); return SORTS.some(x => x.v === v) ? v : 'saved-desc'; };
+function sortTweets(list, mode){
+  const [field, dir] = mode.split('-');
+  const val = x => field === 'posted' ? (x.createdAt || x.savedAt) : x.savedAt;
+  return [...list].sort((a, b) => dir === 'asc' ? val(a) - val(b) : val(b) - val(a));
+}
+function sortSheet(fid){
+  const cur = getSort(fid);
+  openSheet(`<h4 style="margin-top:4px">${t('sort')}</h4>
+    <div class="optlist">${SORTS.map(x => `<button class="${x.v === cur ? 'on' : ''}" data-sort="${x.v}">${t(x.k)}</button>`).join('')}</div>`, s => {
+    s.querySelectorAll('[data-sort]').forEach(b => b.onclick = () => { ls.set(sortKey(fid), b.dataset.sort); closeSheet(); viewFolder(fid); });
+  });
+}
+
+/* select mode */
+const sel = { on: false, ids: new Set() };
+let currentList = [];
+function enterSelect(firstId){
+  sel.on = true; sel.ids = new Set(firstId ? [firstId] : []);
+  if (navigator.vibrate) try { navigator.vibrate(10); } catch {}
+  renderSelectChrome();
+}
+function exitSelect(){
+  if (!sel.on) return;
+  sel.on = false; sel.ids.clear();
+  document.body.classList.remove('selecting'); $('#selbar').hidden = true; $('#fab').hidden = false;
+  document.querySelectorAll('.card.sel').forEach(c => c.classList.remove('sel'));
+  const h = decodeURIComponent(location.hash.slice(1) || '/');
+  if (h.startsWith('/f/') || h === '/all') folderHeader();
+}
+function toggleSel(id){
+  sel.ids.has(id) ? sel.ids.delete(id) : sel.ids.add(id);
+  renderSelectChrome();
+}
+function renderSelectChrome(){
+  document.body.classList.add('selecting');
+  document.querySelectorAll('.card').forEach(c => c.classList.toggle('sel', sel.ids.has(c.dataset.id)));
+  const all = currentList.length && currentList.every(x => sel.ids.has(x.id));
+  $('#top').innerHTML = `<button class="iconbtn" onclick="exitSelect()" aria-label="${esc(t('cancel'))}">${ICON.close}</button>
+    <h1>${esc(t('nSelected', sel.ids.size))}</h1>
+    <button class="textbtn" onclick="${all ? 'selectNone()' : 'selectAll()'}">${t(all ? 'selectNone' : 'selectAll')}</button>`;
+  $('#fab').hidden = true; $('#selbar').hidden = false;
+  $('#selMove').textContent = t('move'); $('#selDel').textContent = t('delete');
+  $('#selMove').disabled = $('#selDel').disabled = !sel.ids.size;
+}
+function selectAll(){ currentList.forEach(x => sel.ids.add(x.id)); renderSelectChrome(); }
+function selectNone(){ sel.ids.clear(); renderSelectChrome(); }
+$('#selMove').addEventListener('click', () => {
+  const ids = [...sel.ids]; if (!ids.length) return;
+  openSheet(`<h4 style="margin-top:4px">${t('moveToFolder')}</h4><div class="chips" id="mchips"></div>`, s => {
+    folderChips(s.querySelector('#mchips'), null, async fid => {
+      for (const id of ids){ const tw = state.tweets.find(x => x.id === id); if (tw) await saveTweet(Object.assign({}, tw, { folderId: fid })); }
+      ls.set('lastFolder', fid);
+      closeSheet(); toast(t('movedMany', ids.length, folderName(fid))); exitSelect(); refreshList();
+    });
+  });
+});
+$('#selDel').addEventListener('click', async () => {
+  const ids = [...sel.ids]; if (!ids.length) return;
+  if (!confirm(t('confirmDeleteMany', ids.length))) return;
+  for (const id of ids) await removeTweet(id);
+  toast(t('deletedMany', ids.length)); exitSelect(); refreshList();
+});
+function refreshList(){
+  const y = window.scrollY; route(); window.scrollTo(0, y);
+}
+
+function folderHeader(){
+  const h = decodeURIComponent(location.hash.slice(1) || '/');
+  const fid = h.startsWith('/f/') ? h.slice(3) : null;
+  const f = fid ? state.folders.find(x => x.id === fid) : null;
+  setHeader(f ? f.name : t('allTweets'), true,
+    (currentList.length ? `<button class="iconbtn" onclick="enterSelect()" aria-label="${esc(t('select'))}">${ICON.check}</button>
+    <button class="iconbtn" onclick="sortSheet(${f ? `'${esc(f.id)}'` : 'null'})" aria-label="${esc(t('sort'))}">${ICON.sort}</button>` : '')
+    + (f ? `<button class="iconbtn" onclick="folderMenu('${esc(f.id)}')" aria-label="${esc(t('options'))}">${ICON.more}</button>` : ''));
+}
 function viewFolder(fid){
   const f = fid ? state.folders.find(x => x.id === fid) : null;
   if (fid && !f){ location.hash = '/'; return; }
-  setHeader(f ? f.name : t('allTweets'), true,
-    f ? `<button class="iconbtn" onclick="folderMenu('${esc(f.id)}')" aria-label="${esc(t('options'))}">${ICON.more}</button>` : '');
-  const ts = f ? tweetsIn(f.id) : [...state.tweets].sort((a, b) => b.savedAt - a.savedAt);
-  $('#view').innerHTML = ts.length ? `<div class="masonry">${ts.map(cardHTML).join('')}</div>`
+  currentList = sortTweets(f ? tweetsIn(f.id) : state.tweets, getSort(f ? f.id : null));
+  folderHeader();
+  $('#view').innerHTML = currentList.length ? `<div class="masonry">${currentList.map(cardHTML).join('')}</div>`
     : emptyState(t('folderEmptyTitle'), `<p>${t('folderEmptyBody')}</p>`);
+  if (sel.on){
+    for (const id of [...sel.ids]) if (!currentList.some(x => x.id === id)) sel.ids.delete(id);
+    renderSelectChrome();
+  }
 }
 let searchQ = '';
 function viewSearch(){
@@ -701,6 +842,8 @@ async function viewSettings(){
       <p>${t('lastBackup')}: <b>${last ? fmtDate(last) : t('never')}</b></p>
       <button class="btn" onclick="exportData()">${t('exportBtn')}</button>
       <button class="btn ghost" onclick="document.getElementById('importFile').click()">${t('importBtn')}</button>
+      <p style="margin-top:14px">${t('backupReminder')}</p>
+      <div class="chips">${REMIND.map(r => `<button class="chip ${remindDays() === +r.v ? 'on' : ''}" data-remind="${r.v}">${t(r.k)}</button>`).join('')}</div>
     </div>
     <div class="section"><h3>${t('howTitle')}</h3><ol>${t('howSteps').map(s => `<li>${s}</li>`).join('')}</ol>
       <p>${t('fxNote')}</p>
@@ -714,6 +857,9 @@ async function viewSettings(){
   $('#view').querySelectorAll('[data-lang]').forEach(b => b.onclick = () => {
     ls.set('lang', b.dataset.lang); applyLang(b.dataset.lang); viewSettings();
   });
+  $('#view').querySelectorAll('[data-remind]').forEach(b => b.onclick = () => {
+    ls.set('backupEvery', b.dataset.remind); ls.set('backupSnooze', '0'); viewSettings();
+  });
 }
 function route(){
   const h = decodeURIComponent(location.hash.slice(1) || '/');
@@ -724,10 +870,29 @@ function route(){
   if (h === '/settings') return viewSettings();
   viewHome();
 }
-window.addEventListener('hashchange', route);
+window.addEventListener('hashchange', () => { if (sel.on){ sel.on = false; sel.ids.clear(); document.body.classList.remove('selecting'); $('#selbar').hidden = true; $('#fab').hidden = false; } route(); });
+let suppressClick = false;
 $('#view').addEventListener('click', e => {
-  const c = e.target.closest('.card'); if (c) openTweet(c.dataset.id);
+  const c = e.target.closest('.card'); if (!c) return;
+  if (suppressClick){ suppressClick = false; e.preventDefault(); return; }
+  if (sel.on){ e.preventDefault(); toggleSel(c.dataset.id); return; }
+  openTweet(c.dataset.id);
 });
+/* long-press a card (in a folder view) to start selecting */
+let pressTimer = null, pressStart = null;
+$('#view').addEventListener('pointerdown', e => {
+  const c = e.target.closest('.card'); if (!c || sel.on) return;
+  const h = decodeURIComponent(location.hash.slice(1) || '/');
+  if (!(h.startsWith('/f/') || h === '/all')) return;
+  pressStart = { x: e.clientX, y: e.clientY };
+  pressTimer = setTimeout(() => { pressTimer = null; suppressClick = true; enterSelect(c.dataset.id); }, 480);
+});
+const cancelPress = () => { if (pressTimer){ clearTimeout(pressTimer); pressTimer = null; } };
+$('#view').addEventListener('pointermove', e => {
+  if (pressTimer && pressStart && Math.hypot(e.clientX - pressStart.x, e.clientY - pressStart.y) > 10) cancelPress();
+});
+['pointerup', 'pointercancel', 'scroll'].forEach(ev => window.addEventListener(ev, cancelPress, { passive: true }));
+$('#view').addEventListener('contextmenu', e => { if (e.target.closest('.card')) e.preventDefault(); });
 
 /* ---------- boot ---------- */
 async function load(){ state.folders = await getAll('folders'); state.tweets = await getAll('tweets'); }

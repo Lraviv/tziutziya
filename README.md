@@ -14,7 +14,9 @@ No framework, no build step: plain HTML, CSS and JavaScript.
 - **Notes** on any saved tweet
 - **Search** across tweet text, notes, author names and folder names
 - **Move, edit and delete** saved tweets; rename and delete folders
-- **Backup and restore** to a JSON file (merge or full replace), with a reminder if you haven't backed up in a month
+- **Sorting** inside each folder: recently or oldest saved, recently or oldest posted (remembered per folder)
+- **Select mode**: long-press a tweet (or tap the check button) to select several and move or delete them together
+- **Backup and restore** to a JSON file (merge or full replace), with a backup reminder you can set to weekly, every 2 weeks, monthly, or off
 - **Works offline**: the app shell and tweet images are cached by a service worker
 - **English and Hebrew** interface with full RTL support. Choose the language in Settings; the choice is remembered on the device (the default follows the device language)
 - **Light and dark mode**, following the system setting
