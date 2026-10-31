@@ -4,6 +4,8 @@ A tiny Progressive Web App for saving tweets from X into folders, displayed in a
 
 No framework, no build step: plain HTML, CSS and JavaScript.
 
+**Live app: [lraviv.github.io/tziutziya](https://lraviv.github.io/tziutziya/)**
+
 ## Features
 
 - **Folders as boards**: each folder shows a collage of images from its tweets
