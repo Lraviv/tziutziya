@@ -111,6 +111,10 @@ textarea{resize:vertical;margin-top:12px}
 .section .chips{margin-top:8px}
 .stat{display:flex;justify-content:space-between;font-size:14px;padding:4px 0}
 .searchbox{margin:0 2px 14px}
+.tagbar{display:flex;gap:8px;overflow-x:auto;margin:0 -12px 14px;padding:2px 14px;scrollbar-width:none}
+.tagbar::-webkit-scrollbar{display:none}
+.tagbar .chip{flex:none;padding:7px 13px}
+.board .tags{display:block;color:var(--muted);font-size:12px;margin:1px 3px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #toast{position:fixed;z-index:30;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;max-width:88vw;text-align:center}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 </style>
@@ -165,6 +169,9 @@ const I18N = {
     howSteps: ['באפליקציה של X: <b>שיתוף</b> ← <b>העתקת קישור</b>', 'פותחים את ציוצייה ולוחצים <b>שמירת ציוץ</b> (אם iOS שואל, מאשרים "הדבקה")', 'בוחרים תיקייה ושומרים'],
     fxNote: 'את התוכן של הציוץ (טקסט, תמונות) האפליקציה מושכת דרך השירות הציבורי FxTwitter.',
     statusTitle: 'מצב', tweets: 'ציוצים', folders: 'תיקיות', installed: 'מותקן במסך הבית', persisted: 'אחסון מוגן ממחיקה אוטומטית',
+    tags: 'תגיות', editTags: 'עריכת תגיות', addTagPh: 'תגית חדשה', allTags: 'הכל', done: 'סיום',
+    tagsHint: 'לוחצים על תגית כדי להוסיף או להסיר אותה מהתיקייה.',
+    noFoldersWithTag: n => `אין תיקיות עם התגית «${n}»`,
     yes: 'כן', no: 'לא', linkOnly: 'נשמר כקישור בלבד', tweetFallback: 'ציוץ', storageError: 'אין גישה לאחסון'
   },
   en: {
@@ -205,6 +212,9 @@ const I18N = {
     howSteps: ['In the X app: <b>Share</b> → <b>Copy Link</b>', 'Open Tziutziya and tap <b>Save tweet</b> (allow "Paste" if iOS asks)', 'Pick a folder and save'],
     fxNote: "Tweet content (text, images) is fetched through the public FxTwitter service.",
     statusTitle: 'Status', tweets: 'Tweets', folders: 'Folders', installed: 'Installed on home screen', persisted: 'Storage protected from auto-cleanup',
+    tags: 'Tags', editTags: 'Edit tags', addTagPh: 'New tag', allTags: 'All', done: 'Done',
+    tagsHint: 'Tap a tag to add it to or remove it from this folder.',
+    noFoldersWithTag: n => `No folders tagged "${n}"`,
     yes: 'Yes', no: 'No', linkOnly: 'Saved as a link only', tweetFallback: 'Tweet', storageError: 'Storage unavailable'
   }
 };
@@ -296,6 +306,11 @@ const folderName = fid => state.folders.find(f => f.id === fid)?.name || '';
 function sortedFolders(){
   const last = fid => Math.max(0, ...state.tweets.filter(x => x.folderId === fid).map(x => x.savedAt));
   return [...state.folders].sort((a, b) => (last(b.id) || b.createdAt) - (last(a.id) || a.createdAt));
+}
+const folderTags = f => Array.isArray(f.tags) ? f.tags : [];
+function allTags(){
+  const set = new Set(); state.folders.forEach(f => folderTags(f).forEach(x => set.add(x)));
+  return [...set].sort((a, b) => a.localeCompare(b, I18N[lang].locale));
 }
 function sized(u, n){ return u && u.includes('pbs.twimg.com/media') ? u.split('?')[0] + '?name=' + n : u; }
 function thumbOf(tw){ const m = tw.media?.[0]; if (!m) return null; return m.type === 'photo' ? sized(m.url, 'small') : (m.thumb || null); }
@@ -518,14 +533,19 @@ function noteSheet(tw){
 /* ---------- folders ---------- */
 async function newFolderFlow(){
   const name = prompt(t('newFolderPrompt')); if (!name?.trim()) return;
-  await createFolder(name); route();
+  const f = await createFolder(name);
+  const filter = ls.get('tagFilter');
+  if (f && filter && !folderTags(f).includes(filter)) await saveFolder(Object.assign({}, f, { tags: [...folderTags(f), filter] }));
+  route();
 }
 function folderMenu(fid){
   const f = state.folders.find(x => x.id === fid); if (!f) return;
   const n = tweetsIn(fid).length;
   openSheet(`<h4 style="margin-top:4px" dir="auto">${esc(f.name)}</h4>
     <button class="btn ghost" id="ren">${t('rename')}</button>
+    <div class="row"><button class="btn ghost" id="tagsf">${t('editTags')}</button></div>
     <div class="row"><button class="btn danger" id="delf">${t('deleteFolder', n)}</button></div>`, s => {
+    s.querySelector('#tagsf').onclick = () => tagsSheet(f.id);
     s.querySelector('#ren').onclick = async () => {
       const name = prompt(t('renamePrompt'), f.name); if (!name?.trim()) return;
       await saveFolder(Object.assign({}, f, { name: name.trim() })); closeSheet(); route();
@@ -537,6 +557,34 @@ function folderMenu(fid){
       closeSheet(); toast(t('folderDeleted')); location.hash = '/';
     };
   });
+}
+
+function tagsSheet(fid){
+  const render = () => {
+    const f = state.folders.find(x => x.id === fid); if (!f) return closeSheet();
+    const mine = folderTags(f);
+    const tags = [...new Set([...allTags(), ...mine])];
+    openSheet(`<h4 style="margin-top:4px" dir="auto">${t('tags')} · ${esc(f.name)}</h4>
+      <p class="meta" style="margin:0 2px 10px">${t('tagsHint')}</p>
+      <div class="chips">${tags.map(x => `<button class="chip ${mine.includes(x) ? 'on' : ''}" data-tag="${esc(x)}" dir="auto"># ${esc(x)}</button>`).join('')}</div>
+      <div class="inline"><input id="newTag" placeholder="${esc(t('addTagPh'))}" maxlength="30" dir="auto"><button class="btn" id="addTag">${t('add')}</button></div>
+      <div class="row"><button class="btn ghost" id="tagsDone">${t('done')}</button></div>`, s => {
+      const setTags = async next => { await saveFolder(Object.assign({}, f, { tags: next })); render(); };
+      s.querySelectorAll('[data-tag]').forEach(b => b.onclick = () => {
+        const x = b.dataset.tag;
+        setTags(mine.includes(x) ? mine.filter(y => y !== x) : [...mine, x]);
+      });
+      const inp = s.querySelector('#newTag');
+      const add = () => {
+        const x = inp.value.replace(/^#+/, '').trim(); if (!x) return;
+        setTags(mine.includes(x) ? mine : [...mine, x]);
+      };
+      s.querySelector('#addTag').onclick = add;
+      inp.onkeydown = e => { if (e.key === 'Enter') add(); };
+      s.querySelector('#tagsDone').onclick = () => { closeSheet(); route(); };
+    });
+  };
+  render();
 }
 
 /* ---------- backup ---------- */
@@ -591,7 +639,7 @@ function boardTile(f, ts, href){
   for (const tw of ts){ const th = thumbOf(tw); if (th) cells.push(`<img src="${esc(th)}" loading="lazy" referrerpolicy="no-referrer" alt="">`); if (cells.length === 3) break; }
   for (const tw of ts){ if (cells.length === 3) break; if (!thumbOf(tw) && tw.text) cells.push(`<div class="txt" dir="auto">${esc(tw.text.slice(0, 120))}</div>`); }
   while (cells.length < 3) cells.push('<div class="blank"></div>');
-  return `<a class="board" href="${href}"><div class="collage">${cells.join('')}</div><h3 dir="auto">${esc(f.name)}</h3><small>${t('tweetsCount', ts.length)}</small></a>`;
+  return `<a class="board" href="${href}"><div class="collage">${cells.join('')}</div><h3 dir="auto">${esc(f.name)}</h3><small>${t('tweetsCount', ts.length)}</small>${folderTags(f).length ? `<span class="tags" dir="auto">${folderTags(f).map(x => '#' + esc(x)).join(' ')}</span>` : ''}</a>`;
 }
 function viewHome(){
   setHeader(t('app'), false,
@@ -600,12 +648,22 @@ function viewHome(){
   if (!state.tweets.length && !state.folders.length){
     h += emptyState(t('emptyTitle'), `<p>${t('emptyIntro')}</p><ol>${t('emptySteps').map(s => `<li>${s}</li>`).join('')}</ol>`);
   } else {
-    const all = [...state.tweets].sort((a, b) => b.savedAt - a.savedAt);
-    h += '<div class="boards">' + boardTile({ name: t('allTweets') }, all, '#/all');
-    for (const f of sortedFolders()) h += boardTile(f, tweetsIn(f.id), '#/f/' + encodeURIComponent(f.id));
+    const tags = allTags();
+    let filter = ls.get('tagFilter') || '';
+    if (filter && !tags.includes(filter)){ filter = ''; ls.set('tagFilter', ''); }
+    if (tags.length){
+      h += `<div class="tagbar"><button class="chip ${filter ? '' : 'on'}" data-filter="">${t('allTags')}</button>`
+        + tags.map(x => `<button class="chip ${x === filter ? 'on' : ''}" data-filter="${esc(x)}" dir="auto"># ${esc(x)}</button>`).join('') + '</div>';
+    }
+    const folders = sortedFolders().filter(f => !filter || folderTags(f).includes(filter));
+    h += '<div class="boards">';
+    if (!filter) h += boardTile({ name: t('allTweets') }, [...state.tweets].sort((a, b) => b.savedAt - a.savedAt), '#/all');
+    for (const f of folders) h += boardTile(f, tweetsIn(f.id), '#/f/' + encodeURIComponent(f.id));
     h += `<div class="board" onclick="newFolderFlow()"><div class="collage add">＋</div><h3>${t('newFolder')}</h3></div></div>`;
+    if (filter && !folders.length) h += `<div class="empty" style="padding-top:16px">${esc(t('noFoldersWithTag', filter))}</div>`;
   }
   $('#view').innerHTML = h;
+  $('#view').querySelectorAll('[data-filter]').forEach(b => b.onclick = () => { ls.set('tagFilter', b.dataset.filter); viewHome(); });
 }
 function viewFolder(fid){
   const f = fid ? state.folders.find(x => x.id === fid) : null;
@@ -624,7 +682,7 @@ function viewSearch(){
   const doSearch = () => {
     searchQ = q.value; const s = searchQ.trim().toLowerCase();
     if (!s){ $('#res').innerHTML = ''; return; }
-    const hits = state.tweets.filter(x => [x.text, x.note, x.author?.name, x.author?.handle, x.quote?.text, folderName(x.folderId)]
+    const hits = state.tweets.filter(x => [x.text, x.note, x.author?.name, x.author?.handle, x.quote?.text, folderName(x.folderId), ...folderTags(state.folders.find(f => f.id === x.folderId) || {})]
       .some(v => (v || '').toLowerCase().includes(s))).sort((a, b) => b.savedAt - a.savedAt);
     $('#res').innerHTML = hits.length ? `<div class="masonry">${hits.map(cardHTML).join('')}</div>` : `<div class="empty">${t('noResults')}</div>`;
   };

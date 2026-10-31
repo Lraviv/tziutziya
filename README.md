@@ -9,6 +9,7 @@ No framework, no build step: plain HTML, CSS and JavaScript.
 ## Features
 
 - **Folders as boards**: each folder shows a collage of images from its tweets
+- **Folder tags**: tag folders (e.g. `work`, `recipes`) and filter the home screen by tag
 - **Masonry grid** of saved tweets with text, images, videos and quoted tweets
 - **Notes** on any saved tweet
 - **Search** across tweet text, notes, author names and folder names
