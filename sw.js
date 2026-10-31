@@ -1,5 +1,5 @@
 // ציוצייה – service worker: app shell offline + cached tweet images
-const SHELL_CACHE = 'tziutziya-shell-v3';
+const SHELL_CACHE = 'tziutziya-shell-v4';
 const IMG_CACHE = 'tziutziya-img-v1';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
@@ -18,7 +18,22 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
-  // App shell: stale-while-revalidate (so updates arrive on the next open)
+  // Page itself: network-first, so a new deploy shows up on the very next open.
+  // Falls back to the cached copy when offline.
+  if (url.origin === location.origin && req.mode === 'navigate') {
+    e.respondWith(caches.open(SHELL_CACHE).then(async cache => {
+      try {
+        const res = await fetch(req, { cache: 'no-store' });
+        if (res.ok) cache.put('./index.html', res.clone());
+        return res;
+      } catch (err) {
+        return (await cache.match('./index.html')) || Response.error();
+      }
+    }));
+    return;
+  }
+
+  // Other app files (icons, manifest): stale-while-revalidate
   if (url.origin === location.origin) {
     e.respondWith(caches.open(SHELL_CACHE).then(async cache => {
       const key = req.mode === 'navigate' ? './index.html' : req;
