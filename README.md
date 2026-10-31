@@ -1,29 +1,71 @@
-# ציוצייה
+# Tziutziya
 
-אפליקציית ווב (PWA) לשמירת ציוצים מ-X בתיקיות, בתצוגה בסגנון פינטרסט. הכול נשמר מקומית בטלפון (IndexedDB), עם ייצוא ושחזור ל-JSON.
+A tiny Progressive Web App for saving tweets from X into folders, displayed in a Pinterest-style board layout. Everything is stored locally on your device (IndexedDB), with JSON export and import for backup and restore.
 
-## העלאה (GitHub Pages, חינם)
-1. יוצרים repo חדש ב-GitHub, למשל `tziutziya`.
-2. מעלים את כל הקבצים מהתיקייה (Add file ← Upload files).
-3. Settings ← Pages ← Source: `Deploy from a branch`, Branch: `main` / `root` ← Save.
-4. אחרי דקה האתר זמין ב-`https://<username>.github.io/tziutziya/`.
+No framework, no build step: plain HTML, CSS and JavaScript.
 
-אפשר להעלות לכל אחסון סטטי אחר (Netlify, Vercel, Cloudflare Pages). חייב HTTPS.
+## Features
 
-## התקנה באייפון
-1. פותחים את הכתובת ב-**Safari**.
-2. כפתור השיתוף ← **הוספה למסך הבית**.
-3. מעכשיו פותחים רק מהאייקון. לאפליקציה המותקנת יש אחסון נפרד מ-Safari, והוא לא נמחק אוטומטית.
+- **Folders as boards**: each folder shows a collage of images from its tweets
+- **Masonry grid** of saved tweets with text, images, videos and quoted tweets
+- **Notes** on any saved tweet
+- **Search** across tweet text, notes, author names and folder names
+- **Move, edit and delete** saved tweets; rename and delete folders
+- **Backup and restore** to a JSON file (merge or full replace), with a reminder if you haven't backed up in a month
+- **Works offline**: the app shell and tweet images are cached by a service worker
+- **RTL / Hebrew UI** with light and dark mode
 
-## שמירת ציוץ
-1. באפליקציה של X: **שיתוף** ← **העתקת קישור**.
-2. פותחים את ציוצייה ולוחצים **שמירת ציוץ**. iOS יבקש אישור "הדבקה".
-3. בוחרים תיקייה (או יוצרים חדשה), מוסיפים הערה אם רוצים, ושומרים.
+## Deploy (GitHub Pages, free)
 
-## גיבוי
-הגדרות ← **ייצוא גיבוי** פותח את תפריט השיתוף, ומשם בוחרים "שמירה בקבצים". **שחזור מקובץ גיבוי** מאפשר מיזוג או החלפה מלאה.
+1. Push the files to a public GitHub repository.
+2. Go to **Settings → Pages**.
+3. Under **Build and deployment**, set Source to **Deploy from a branch**, Branch to **main**, folder **/ (root)**, then click **Save**.
+4. After a minute or two the site is live at `https://<username>.github.io/<repo>/`.
 
-## הערות טכניות
-- תוכן הציוץ (טקסט, תמונות, ציטוט) נמשך מ-`api.fxtwitter.com`, שירות ציבורי של צד שלישי. אם הוא לא זמין, הציוץ נשמר כקישור ואפשר ללחוץ אחר כך על "ניסיון חוזר".
-- תמונות נשמרות ב-cache של ה-service worker, כך שגם בלי אינטרנט רואים את מה ששמרת. התמונות עצמן לא נכללות בגיבוי ה-JSON, רק הקישורים אליהן.
-- הקבצים: `index.html` (כל האפליקציה), `sw.js` (עבודה אופליין), `manifest.webmanifest` ואייקונים.
+Or with the GitHub CLI, from the project folder:
+
+```bash
+gh api -X POST repos/{owner}/{repo}/pages -f "source[branch]=main" -f "source[path]=/"
+```
+
+Any static host works (Netlify, Vercel, Cloudflare Pages), as long as it serves over HTTPS.
+
+## Install on iPhone
+
+1. Open the site in **Safari**.
+2. Tap the Share button, then **Add to Home Screen**.
+3. From now on, open the app from its home screen icon.
+
+> On iOS, a home screen web app has its own storage, separate from Safari, and that storage is not cleared automatically. Always use the installed app so your saves stay in one place.
+
+## Saving a tweet
+
+1. In the X app, tap **Share** on a tweet, then **Copy Link**.
+2. Open Tziutziya and tap the **Save tweet** button at the bottom. Allow "Paste" if iOS asks.
+3. Pick a folder (or create a new one), optionally add a note, and save.
+
+On Android, the app also registers as a share target, so it can appear directly in the share sheet once installed.
+
+## Backup
+
+Open **Settings** (⚙︎):
+
+- **Export backup** opens the share sheet, where you can choose "Save to Files" or iCloud.
+- **Restore from backup** lets you merge a backup with what's already saved, or replace everything.
+
+The backup includes folders, tweets, notes and image links. The images themselves are not included in the file.
+
+## How it works
+
+| File | Purpose |
+| --- | --- |
+| `index.html` | The whole app: markup, styles and logic, with hash-based routing |
+| `sw.js` | Service worker: offline app shell (stale-while-revalidate) and image cache |
+| `manifest.webmanifest` | PWA manifest: name, icons, standalone display, share target |
+| `icon-*.png`, `apple-touch-icon.png` | App icons |
+
+Tweet content (text, media, quoted tweet) is fetched from the public [FxTwitter](https://github.com/FixTweet/FxTwitter) API (`api.fxtwitter.com`), so no X API key is needed. If that service is unavailable, the tweet is saved as a link only, and you can retry fetching its content later from the tweet's detail view.
+
+## Privacy
+
+There is no backend and no account. Your folders and saved tweets never leave your device, except for the tweet IDs sent to FxTwitter to fetch their content, and the backup files you export yourself.
