@@ -414,7 +414,9 @@ async function startSave(raw){
   const p = parseTweetUrl(raw);
   if (!p){ toast(t('noTweetLink')); return pasteSheet(raw); }
   const existing = state.tweets.find(x => x.id === p.id);
-  let selected = existing?.folderId || ls.get('lastFolder');
+  const h = decodeURIComponent(location.hash.slice(1));
+  const openFolder = h.startsWith('/f/') ? h.slice(3) : null;
+  let selected = existing?.folderId || openFolder || ls.get('lastFolder');
   if (!state.folders.some(f => f.id === selected)) selected = sortedFolders()[0]?.id || null;
 
   openSheet(`<div id="pv">${existing ? previewHTML(existing) : skeletonHTML}</div>
